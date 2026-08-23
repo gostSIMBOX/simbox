@@ -1,0 +1,161 @@
+# Requirements: Android Implementation Module
+
+> Native Android SMS functionality for Flutter SMS/USSD plugin.
+
+## Overview
+
+This module provides the native Android implementation for SMS operations. It handles all SMS-related functionality including sending, reading, and permission management using Android's native APIs.
+
+## Functional Requirements
+
+### FR-1: Plugin Lifecycle Management
+
+**Description**: Implement Flutter plugin lifecycle interfaces for proper initialization and cleanup.
+
+**Acceptance Criteria**:
+- [ ] Implement `FlutterPlugin` interface
+- [ ] Implement `MethodCallHandler` interface
+- [ ] Implement `ActivityAware` interface
+- [ ] Initialize method channel in `onAttachedToEngine()`
+- [ ] Clean up handler in `onDetachedFromEngine()`
+- [ ] Store activity reference in `onAttachedToActivity()`
+- [ ] Clear activity in `onDetachedFromActivity()`
+
+### FR-2: Method Call Handling
+
+**Description**: Handle all method channel calls from Flutter.
+
+**Acceptance Criteria**:
+- [ ] `getPlatformVersion` returns Android version string
+- [ ] `sendSms` sends SMS with phoneNumber and message arguments
+- [ ] `getSmsMessages` returns all SMS messages
+- [ ] `getSmsMessagesByPhoneNumber` returns filtered messages
+- [ ] `requestSmsPermissions` requests runtime permissions
+- [ ] `hasSmsPermissions` checks permission status
+- [ ] Return appropriate error codes for failures
+
+### FR-3: SMS Sending
+
+**Description**: Send SMS messages using Android SmsManager.
+
+**Acceptance Criteria**:
+- [ ] Check permissions before sending
+- [ ] Validate phoneNumber and message arguments
+- [ ] Detect single vs multipart messages automatically
+- [ ] Use `sendTextMessage()` for single-part messages
+- [ ] Use `sendMultipartTextMessage()` for multi-part messages
+- [ ] Handle exceptions with SMS_SEND_ERROR code
+
+### FR-4: SMS Reading
+
+**Description**: Read SMS messages from Android Telephony provider.
+
+**Acceptance Criteria**:
+- [ ] Check permissions before reading
+- [ ] Query Telephony.Sms.CONTENT_URI
+- [ ] Order results by date DESC
+- [ ] Map cursor columns to message fields
+- [ ] Return list of message maps
+- [ ] Handle exceptions with SMS_READ_ERROR code
+
+### FR-5: SMS Filtering
+
+**Description**: Filter SMS messages by phone number.
+
+**Acceptance Criteria**:
+- [ ] Validate phoneNumber argument (required)
+- [ ] Query with WHERE clause: ADDRESS = ?
+- [ ] Return filtered message list
+- [ ] Handle INVALID_ARGUMENTS error for missing phone number
+
+### FR-6: Permission Management
+
+**Description**: Handle Android runtime permissions (Android 6.0+).
+
+**Acceptance Criteria**:
+- [ ] Request SEND_SMS, READ_SMS, RECEIVE_SMS permissions
+- [ ] Use permission request code 123
+- [ ] Check all permissions with hasSmsPermissions()
+- [ ] Return NO_ACTIVITY error if activity unavailable
+- [ ] Return true immediately if already granted
+
+### FR-7: Error Handling
+
+**Description**: Provide clear error codes for all failure scenarios.
+
+**Acceptance Criteria**:
+- [ ] `INVALID_ARGUMENTS` - Missing required parameters
+- [ ] `PERMISSION_DENIED` - SMS permissions not granted
+- [ ] `SMS_SEND_ERROR` - Failed to send SMS
+- [ ] `SMS_READ_ERROR` - Failed to read SMS
+- [ ] `NO_ACTIVITY` - No activity for permission request
+
+## Non-Functional Requirements
+
+### NFR-1: Performance
+
+**Description**: Efficient SMS operations with minimal overhead.
+
+**Metrics**:
+- SMS send initiation < 100ms
+- SMS query performance: < 500ms for 1000 messages
+- Proper cursor management (no leaks)
+
+### NFR-2: Reliability
+
+**Description**: Robust error handling and resource management.
+
+**Metrics**:
+- All operations check permissions first
+- Cursor resources properly closed (use blocks)
+- No memory leaks from activity references
+
+### NFR-3: Compatibility
+
+**Description**: Support Android 6.0+ (API level 23+).
+
+**Metrics**:
+- Runtime permissions for Android 6.0+
+- Backward compatible with older SMS APIs
+- Uses AndroidX support libraries
+
+### NFR-4: Security
+
+**Description**: Proper permission handling and data access.
+
+**Metrics**:
+- All SMS access requires explicit permissions
+- No sensitive data logged
+- Proper activity context for permission requests
+
+## Dependencies
+
+### External Dependencies
+- Android SDK (API 23+)
+- AndroidX Core (ContextCompat, ActivityCompat)
+- Flutter Embedding API
+
+### Internal Dependencies
+- Method channel communication (from Flutter side)
+- SmsMessage data model (for serialization format)
+
+## Constraints
+
+### Platform Constraints
+- Requires Android 6.0+ for runtime permissions
+- SMS functionality requires physical device (not emulator for sending)
+- ContentProvider access requires proper permissions
+
+### Technical Constraints
+- Must implement FlutterPlugin, MethodCallHandler, ActivityAware
+- Must use method channel name "flutter_smsussd"
+- Must handle all error scenarios with specific codes
+
+## Open Questions
+
+None - implementation is complete and stable.
+
+---
+
+*Generated by /legacy analysis on 2026-03-04*
+*Status: DRAFT*
