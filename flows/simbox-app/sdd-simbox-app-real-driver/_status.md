@@ -14,7 +14,16 @@ COMPLETE
 
 ## Blockers
 
-None. Two things carried forward for a future real-Linux-host session
+**Naming note (2026-08-24)**: this flow, together with
+`flows/flutter_gsm/sdd-flutter_gsm-ffi`, fulfills the goal originally
+slotted as `sdd-flutter_gsmsip-channel` (step 3 of the 3-flow sequence
+noted in `sdd-flutter_gsmsip-interface`'s own status — "real
+ttyUSB/AT-command modem driver implementation"). That flow name was
+never actually created; someone looking for it should land here and on
+`sdd-flutter_gsm-ffi` instead. Confirmed with Anton, no new flow
+needed.
+
+None otherwise. Two things carried forward for a future real-Linux-host session
 (not gaps this flow introduced — matches the same pattern every prior
 flow in this chain has documented):
 

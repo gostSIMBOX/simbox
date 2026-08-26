@@ -154,3 +154,55 @@ $ flutter build macos --debug   (apps/simbox-app)
 visually confirmed the desktop chrome and the width-driven
 phone/tablet chrome unification. This flow's IMPLEMENTATION is
 code-complete; ready for DOCUMENTATION once Anton reviews.
+
+## Session 2026-08-24 — Icon Approach correction
+
+Anton ran the rebuilt app and asked directly: "Why aren't icons from
+the iconset being used?" — a fair challenge to the prior session's
+Material-icon fallback. Re-searched `design/nativemind-designsystem-
+v1.8/assets/{adminka,fugue}` more thoroughly than the first pass and
+found real, decodable PNG matches: adminka's `dongle.png` (Модемы) and
+`calls.png` (Операции) are direct, purpose-fitting glyphs already used
+elsewhere in this codebase's icon vocabulary; fugue's `gear.png`
+(Настройки) and `telephone-network.png` (Каналы, the weakest fit — no
+dedicated "channel" concept exists in either set) fill the two gaps
+adminka doesn't cover, per the DS's own documented adminka-primary/
+fugue-fallback rule.
+
+- Vendored the 4 files into `assets/icons/nav/` (per-glyph, same rule
+  as every other icon in this app), added `assets/icons/nav/` to
+  `pubspec.yaml`.
+- `app_shell.dart`: replaced the unused `SvgNavIcon` placeholder
+  variant with a real `PngNavIcon(String asset, {double nativeSize})`;
+  `_destinations` now uses it for all four entries.
+  `NativeBottomBarShell._iconFor` returns a `Widget` (was `IconData`)
+  so both `MaterialNavIcon` and `PngNavIcon` render correctly —
+  bottom-bar icons render untinted (Material's pill / Cupertino's
+  active-color label already signal selection).
+- `gostsimbox_admin_nav_bar.dart`: `_NavTabState` now builds a proper
+  icon widget per variant, tinting `PngNavIcon` via `Image.asset`'s
+  `color`/`colorBlendMode: BlendMode.srcIn` — same visual effect as
+  `Icon`'s own `color` param, so DS glyphs match the active/idle text
+  color exactly.
+- `03-specifications.md`'s Icon Approach section rewritten with an
+  Amendment recording this correction (kept the original reasoning
+  visible rather than silently rewriting history) — Каналы's icon is
+  flagged as still not a purpose-built match, real future work if
+  Anton/a designer supplies one.
+
+### Verification
+
+```
+$ flutter analyze lib test
+0 errors (same 24 pre-existing info-level lints)
+
+$ flutter test
+00:02 +23: All tests passed!
+
+$ flutter build macos --debug
+✓ Built build/macos/Build/Products/Debug/simbox_app.app
+```
+
+Real macOS run confirms all four tabs render the new DS glyphs
+(tinted blue when active, grey otherwise) instead of Material icons —
+screenshot inspected directly.

@@ -55,34 +55,57 @@ order/labels that AC #3 requires. One new field is added:
   this stays `IconData`-based rather than switching to vendored SVGs
   in this round.
 
-## Icon Approach — practical implementation (deviates from the visual doc's literal wording)
+## Icon Approach (corrected 2026-08-24 — see Amendment below)
 
 `02-visual.md`'s Resolved Items call for "4 new simple icons drawn in
-the DS's stroke/weight style." Flagging honestly before specifying
-further: **hand-authoring new SVG artwork is not something this
-text-based SDD/VDD flow can actually produce** — there's no design
-tool or illustrator in this environment, only code. Two real options:
+the DS's stroke/weight style." This document originally shipped plain
+Material icons here instead, reasoning that hand-authoring new SVG
+artwork isn't something a text-based flow can produce. That reasoning
+was correct on its own terms but **the search behind it was too
+narrow** — it concluded no design-system icon fit without searching
+the DS's existing `adminka`/`fugue` asset library (\~4,000 files) for
+glyphs that already fit the four destinations semantically, even if
+not purpose-drawn as nav icons. Anton asked directly why the iconset
+wasn't used, which prompted a proper search.
 
-1. Ship with the **existing Material icon set already in
-   `app_shell.dart`** (`Icons.sim_card_outlined`/`router_outlined`/
-   `call_outlined`/`settings_outlined`, with filled variants for the
-   selected state) — these already map sensibly onto the four
-   destinations and are already implemented/shipping today. Not a
-   pixel-match for the DS's custom single-path SVG style, but a real,
-   buildable, currently-working icon set.
-2. Vendor real custom SVGs once Anton (or a designer) supplies them,
-   matching the DS's documented spec exactly (24px box,
-   `currentColor`-fillable, ~2px stroke — see readme's ICONOGRAPHY
-   §1, the same treatment the VPN app's own bottom-nav icons use).
+### Amendment: real DS-vendored PNGs
 
-**Decision**: ship option 1 now, structured so option 2 is a drop-in
-later. `_AppShellDestination.navIcon` becomes a small sealed type
-(`MaterialNavIcon(IconData, IconData selected)` today; a
-`SvgNavIcon(String asset)` variant added later when real SVGs exist) —
-this is the same "documented gap, not silently faked" pattern already
-used in this app for the RSSI/`.ico` icon gap
-(`app_icons.dart`'s `SignalBars`/`OperatorBadge`). Recorded here as a
-**Dependency Gap**, not guessed past.
+A second, more thorough search of `design/nativemind-designsystem-v1.8/
+assets/{adminka,fugue}` found real, decodable (non-`.ico`), single-glyph
+PNG matches for 3 of the 4 destinations, plus a reasonable fugue
+fallback for the 4th:
+
+| Destination | Asset | Source | Native size |
+|---|---|---|---|
+| Каналы | `channels.png` | fugue `telephone-network.png` (shadowless-2x) — no dedicated adminka "channel" concept exists (adminka's `im*`/`spec` icons are dense-table status flags, not a tab icon) | 32×32 |
+| Модемы | `modems.png` | adminka `dongle.png` — the DS's own modem/dongle glyph | 16×16 |
+| Операции | `operations.png` | adminka `calls.png` — the DS's own calls glyph | 16×16 |
+| Настройки | `settings.png` | fugue `gear.png` (top-level) — no settings glyph in adminka itself | 32×32 |
+
+This is the same adminka-primary/fugue-fallback rule `AppIcons`/
+`AdminIcon` already follow for the dense tables (per the DS readme) —
+it was always the right approach for this problem too, just not
+applied thoroughly enough the first time.
+
+`NavIcon` gains a `PngNavIcon(String asset, {double nativeSize})`
+variant (vendored per-glyph into `assets/icons/nav/`, same rule as
+every other icon in this app — not the full sets). `MaterialNavIcon`
+stays defined but unused, kept only as a documented fallback type.
+Desktop's `GostSimBoxAdminNavBar` tints these via `Image.asset`'s
+`color`/`colorBlendMode: BlendMode.srcIn` (same visual effect as
+`Icon`'s own `color` param) so DS glyphs match the active/idle text
+color exactly. The bottom-bar chrome (phone/tablet) renders them
+untinted in natural DS colors — Material's selection pill and
+Cupertino's active-color label already communicate selection without
+needing icon recoloring there.
+
+**Still not resolved**: Каналы has no purpose-built glyph, only a
+reasonable fugue substitute. If Anton or a designer later supplies a
+real custom SVG (matching the DS's documented nav-icon spec — 24px
+box, `currentColor`-fillable, ~2px stroke, same treatment as the VPN
+app's own bottom-nav icons), it's a straightforward swap: add an
+`SvgNavIcon` variant back and vendor the file, no architectural change
+needed.
 
 ## Chrome: Desktop / Web (≥ 1024px) — new `GostSimBoxAdminNavBar`
 

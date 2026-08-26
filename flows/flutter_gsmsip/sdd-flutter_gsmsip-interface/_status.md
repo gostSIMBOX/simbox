@@ -20,8 +20,11 @@ requirement from `vdd-simbox-app-uiux`)
   deviation and the sip_service.dart near-miss, on 2026-08-20.
 - Soft follow-up (non-blocking): no `flutter build linux` smoke test run
   yet in this environment (no Linux desktop build target available here).
-  Worth running in a Linux-capable environment before/alongside
-  `sdd-flutter_gsmsip-channel`.
+  Worth running in a Linux-capable environment alongside
+  `flows/flutter_gsm/sdd-flutter_gsm-ffi`/`flows/simbox-app/sdd-simbox-
+  app-real-driver` (**2026-08-24 naming note**: `sdd-flutter_gsmsip-
+  channel`, step 3 of the sequence below, was never actually created —
+  those two flows fulfill its goal instead; confirmed with Anton).
 - **New follow-up (2026-08-23, not blocking this flow's own APPROVED
   status)**: `vdd-simbox-app-uiux`'s "Каналы" redesign needs `ModemDevice`
   to represent SIM cards independent of a modem (a "not seated in any
@@ -56,9 +59,14 @@ Key decisions and context for resuming:
   (2) `vdd-simbox-app-uiux` (top-level `flows/vdd-simbox-app-uiux/`) — full
   UI refactor based on `design/simbox-app-maket-v2026`, sequenced to begin
   implementation only after this flow's implementation is complete,
-  (3) `sdd-flutter_gsmsip-channel` (not yet created) — real ttyUSB/AT-command
-  modem driver implementation, to be created only after both (1) and (2)
-  have implemented code merged.
+  (3) `sdd-flutter_gsmsip-channel` — real ttyUSB/AT-command modem driver
+  implementation, to be created only after both (1) and (2) have
+  implemented code merged. **2026-08-24 naming note**: this flow name
+  was never actually created — the goal it describes was instead
+  fulfilled by `flows/flutter_gsm/sdd-flutter_gsm-ffi` (FFI binding to
+  `libsimbox`) and `flows/simbox-app/sdd-simbox-app-real-driver`
+  (end-to-end wiring), both complete. Confirmed with Anton; no new flow
+  needed.
 - Research completed via 3 parallel subagents before drafting requirements:
   - `flutter_gsmsip` current architecture: single non-federated package,
     Android-only (`pubspec.yaml` has no `linux:` platform entry).

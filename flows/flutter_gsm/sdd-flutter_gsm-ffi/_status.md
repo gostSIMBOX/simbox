@@ -16,8 +16,17 @@ completed this session)
 
 ## Blockers
 
-None currently blocking. Two things carried forward for a future
-real-Linux-host session (not gaps this flow introduced — see
+**Naming note (2026-08-24)**: this flow, together with
+`flows/simbox-app/sdd-simbox-app-real-driver`, fulfills the goal
+originally slotted as `sdd-flutter_gsmsip-channel` (step 3 of the
+3-flow sequence noted in `sdd-flutter_gsmsip-interface`'s own status —
+"real ttyUSB/AT-command modem driver implementation"). That flow name
+was never actually created; someone looking for it should land here
+and on `sdd-simbox-app-real-driver` instead. Confirmed with Anton, no
+new flow needed.
+
+None otherwise currently blocking. Two things carried forward for a
+future real-Linux-host session (not gaps this flow introduced — see
 04-implementation-log.md's final handoff note for full detail):
 
 - The real `SIMBOX_DEV_REAL`/Linux code paths in `libsimbox`

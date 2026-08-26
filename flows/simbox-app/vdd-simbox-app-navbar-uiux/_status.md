@@ -14,22 +14,23 @@ unification. Ready for DOCUMENTATION once Anton reviews.
 
 ## Last Updated
 
-2026-08-23 by Claude (plan approved; implemented Tasks 1-8 —
-`package_info_plus` dependency, `NavIcon` sealed type,
-`GostSimBoxAdminNavBar`, `NavClock`, `NativeBottomBarShell` platform
-branch, `AppShell` rewire (deleted `NavigationRail` entirely), 5 new
-tests, and a real macOS manual verification pass. Along the way, found
-and fixed a real pre-existing bug in `flutter_gsm.dart` — 4 platform
-classes existed but were never exported, breaking every native build
-target — see `05-implementation-log.md` for full detail.)
+2026-08-24 by Claude (icon correction: Anton asked why DS icons
+weren't used — a second, more thorough search of `adminka`/`fugue`
+found real matches for 3 of 4 destinations (adminka `dongle.png`/
+`calls.png`, fugue `gear.png`) plus a fugue fallback for the 4th
+(`telephone-network.png` for Каналы, the weakest fit). Replaced the
+Material-icon fallback with a real `PngNavIcon` variant, vendored the
+4 files into `assets/icons/nav/`, updated both chrome widgets to
+render/tint them. See `05-implementation-log.md`'s "Session 2026-08-24"
+entry and `03-specifications.md`'s Icon Approach Amendment.)
 
 ## Blockers
 
-None. Two minor, non-blocking loose ends noted in
-`05-implementation-log.md`'s Remaining Work: the desktop tab-row hover
+None. One minor, non-blocking loose end: the desktop tab-row hover
 screenshot wasn't captured (no pointer-simulation tool available in
-this environment) and real vendored SVG icons are still pending per
-the disclosed Icon Approach deviation.
+this environment). Каналы's icon is a reasonable fugue substitute, not
+a purpose-built match — real future work if Anton/a designer supplies
+one (see `03-specifications.md`'s Icon Approach Amendment).
 
 ## Progress
 
@@ -98,10 +99,11 @@ for its side of the note).
 ## Next Actions
 
 1. Anton: review the real macOS screenshots described in
-   `05-implementation-log.md` (desktop chrome, phone/tablet bottom
-   bar) — nothing further required from Claude unless changes are
-   requested.
-2. Optional, not blocking: real vendored SVG nav icons; a human
-   eyeball pass on the desktop tab-row hover state.
+   `05-implementation-log.md` (desktop chrome with DS icons,
+   phone/tablet bottom bar) — nothing further required from Claude
+   unless changes are requested.
+2. Optional, not blocking: a purpose-built Каналы icon (current one is
+   a fugue substitute); a human eyeball pass on the desktop tab-row
+   hover state.
 3. When ready, proceed to DOCUMENTATION phase (client-facing
    `06-readme.md`).
