@@ -2,154 +2,114 @@
 
 ## Current Phase
 
-SPECIFICATIONS → PLAN (requirements + specs approved 2026-08-26)
+IMPLEMENTATION
 
 ## Phase Status
 
-APPROVED (open questions carried forward into Plan phase, not blocking)
+CONTENT COMPLETE for v1.2 — reader and hub now have shared operational
+implementations, standalone binaries, independent Asterisk modules, and
+optional registration under `res_simbox_core`. All verification available
+in this workspace passes. Production completion remains held for real
+Linux/Asterisk/TTY/USB build and runtime verification.
 
 ## Last Updated
 
-2026-08-26 by Claude
+2026-08-26 by Codex
 
 ## Blockers
 
-None blocking further drafting. Highest-priority open item remains the
-`pvt_start()` cross-module call (core ↔ `res_simbox_programmator`),
-unrelated to this update.
+Compatible Linux Asterisk headers/runtime and real TTY/USB hardware are
+not available in this workspace. This blocks final production build/load
+verification, but not further source implementation here.
+
+Real build/load verification still requires a Linux/Asterisk host, which
+is not available in this workspace.
 
 ## Progress
 
-- [x] Requirements drafted (v1.0 — three modules)
-- [x] Requirements v1.1 drafted (added `res_simbox_reader`, `res_simbox_hub`)
-- [x] Requirements approved (2026-08-26)
-- [x] Specifications drafted (v1.0 — three modules)
-- [x] Specifications v1.1 drafted (added `res_simbox_reader`, `res_simbox_hub` module
-      layout sections; resolved the two open questions that prompted this)
-- [x] Specifications approved (2026-08-26)
-- [ ] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
+- [x] Requirements v1.1 / Specifications / Plan approved
+- [x] Requirements v1.2 approved
+- [x] Specifications v1.2 approved
+- [x] Plan v1.2 approved
+- [x] Implementation v1.2 Phase 7 — legacy oracle + baseline tests
+- [x] Implementation v1.2 Phase 8 — shared implementations + binaries
+- [x] Implementation v1.2 Phase 9 — core registry
+- [x] Implementation v1.2 Phase 10 — independent/managed Asterisk modules
+- [x] Implementation v1.2 Phase 11 — builds/deployment/audit
+- [x] Implementation: Phase 0 (6 decisions)
+- [x] Implementation: Phase 1 `res_simbox_core` (36 content files + build
+      file + upgrade.sh + docs)
+- [x] Implementation: Phase 2 `res_simbox_discovery` (2 content files +
+      build file, real AST_MODULE_INFO module)
+- [x] Implementation: Phase 3 `res_simbox_programmator` (8 content files
+      + `cli_programmator.c` + 7 deploy scripts + build file, two build
+      targets: module + standalone tool)
+- [x] Implementation v1.0: Phase 4 `res_simbox_reader` (former CLI-only
+      module; superseded by v1.2 shared/binary/module layout)
+- [x] Implementation v1.0: Phase 5 `res_simbox_hub` (former binary-only
+      layout; superseded by v1.2 dual-artifact layout)
+- [x] Implementation: Phase 6 (deploy script rewritten for 5-module
+      layout; consolidated cross-module audit — clean, no further
+      couplings found)
+- [ ] Implementation complete — **held open pending real-environment
+      build/load verification** (see Blockers)
 
-## Context Notes
+## Summary of What Exists Now
 
-- User invoked `/sdd new sdd-res-simbox` again, targeting the
-  **already-existing** flow by the same name — treated as a revision/
-  resume rather than a fresh start, since recreating it would have
-  clobbered v1.0. Instruction: "из предыдущего sdd вынеси что reader
-  выносится в res_simbox_reader, hub-ctrl и работа с хабами выносится в res_simbox_hub"
-  (from the previous sdd, carve out: reader goes into `res_simbox_reader`,
-  hub-ctrl and hub-related work goes into `res_simbox_hub`).
-- This resolves two items v1.0 had left as "uncertain-status, not clearly
-  any of the three modules": `reader/` and `hub-ctrl.c`. Both get
-  promoted to their own modules instead.
-- Created two new empty target directories, mirroring the pattern of the
-  original three exactly: `libsCpp/asterisk-res-simbox-reader/`,
-  `libsCpp/asterisk-res-simbox-hub/`. (First drafted without the "simbox"
-  segment — `asterisk-res-reader`/`asterisk-res-hub`, `res_reader`/
-  `res_hub` — user corrected to include it, matching `res_simbox_core`
-  etc. exactly; directories renamed and all doc references updated
-  accordingly.)
-- Verified via full-tree grep: `hub-ctrl.c` has **zero** code coupling
-  with any other legacy file — referenced only by `upgrade.sh`/
-  `upgrade_prog.sh`'s ad-hoc `gcc hub-ctrl.c -lusb -o hub-ctrl` build step.
-  No other "hub work" exists elsewhere in the legacy tree to also carve
-  out — the user's phrase "hub-ctrl и работа с хабами" maps to exactly
-  one file. This makes `res_simbox_hub` the cleanest possible module boundary in
-  this flow (no equivalent of the `pvt_start()` coupling problem).
-- `res_simbox_reader`'s composition: `reader_core.c`/`.h` (shared core, currently
-  `#include`s `../programmator/tty_v2.c` — a relative include that will
-  need re-pointing once `res_simbox_reader`'s and `res_simbox_programmator`'s
-  final paths are both fixed), plus two legacy entry points over that
-  core: `adapter.c` (real-hardware pass-through) and `emulator.c`
-  (simulated reader for testing) — new open question on whether both
-  modes need to survive into the module or just one.
-- Both new modules follow the same target shape already established for
-  `res_simbox_discovery`/`res_simbox_programmator`: real loadable Asterisk
-  modules, hand-rolled `main()`s relocated into `load_module()`/
-  `unload_module()`, no new business logic invented.
-- Updated: module directory list (3→5), Overview, dead-code section
-  wording ("all three modules" → "all modules"), non-code artifacts
-  section ("all three modules'" → "all five modules'"), Open Design
-  Questions (marked the two resolved, added two new module-specific
-  follow-ups).
+| Module | Directory | Content | Build |
+|---|---|---|---|
+| Core | `libsCpp/asterisk-res-simbox-core/` | Existing channel driver plus versioned optional component registry/API for reader and hub | `res_simbox_core.so`; never loads children or starts binaries |
+| Discovery | `libsCpp/asterisk-res-simbox-discovery/` | `adiscovery_core.c` + `adiscovery_test.c` (wrapped as a real Asterisk module) | `Makefile` |
+| Programmator | `libsCpp/asterisk-res-simbox-programmator/` | Live slice (3 files) + standalone tool (4 files) + `cli_programmator.c` (new) + 7 deploy scripts | `Makefile` (two targets: `.so` + standalone `programmator` binary) |
+| Reader | `libsCpp/asterisk-res-simbox-reader/` | One shared adapter/emulator implementation + standalone and Asterisk adapters + core provider + device locking | `res-simbox-reader` + `res_simbox_reader.so` |
+| Hub | `libsCpp/asterisk-res-simbox-hub/` | One callable vendor implementation + standalone and Asterisk adapters + core provider + device locking | `res-simbox-hub`/`hub-ctrl` + `res_simbox_hub.so` |
+
+All five have their own `LICENSE` (NativeMindNONC, correct copyright,
+done earlier this flow).
+
+## Major Deviations From `03-plan.md` (full detail in `04-implementation-log.md`)
+
+1. Task 0.1/1.1/1.2 abandoned: per-function trim broke on `static`
+   internal coupling (found via `app.c`); replaced with whole-file copy
+   for core, per user's "simple mv" redirect. Copyright rule followed:
+   bg111 original kept on all 28 mixed-authorship core files.
+2. Two more `#include "file.c"` compositions found beyond what the source
+   flow's specs listed: `chan_dongle.c`↔`simnode/adiscovery_svistok.c`
+   (moved that file to core, not discovery) and `cli.c`↔`programmator/
+   ttyprog_svistok.c` (handled correctly via the already-approved CLI
+   extraction, with one linkage fix: `complete_device()` promoted from
+   `static`).
+3. `res_simbox_discovery`'s only real content was a zero-Asterisk-API
+   polling daemon — user chose to force it into a module anyway; wrapped
+   with the same `ast_pthread_create_background` idiom `chan_dongle.c`
+   already uses.
+4. v1.0 exposed reader only through on-demand CLI. v1.2 supersedes that
+   decision: the operation bodies are shared by CLI/core dispatch and the
+   new standalone `res-simbox-reader` binary.
+5. `ttyprog_programmator.c` stays a standalone tool. v1.2 supersedes the
+   old hub-only-binary decision: hub now builds both an end-user binary
+   and `res_simbox_hub.so` from one callable vendor implementation.
+6. Build files: simple standalone Makefiles for all five modules instead
+   of a full autotools regeneration — the carried legacy `configure.in`/
+   `Makefile.in` need a real `configure` run this environment can't
+   perform. Kept as reference in `res_simbox_core/` only.
 
 ## Fork History
 
-Not forked. Revision of the same flow (v1.0 → v1.1), triggered by a
-second `/sdd new` invocation with the identical flow name — treated as
-"add to the existing flow," not "recreate it."
-
-## Resume Note (2026-08-26)
-
-User resumed this flow asking for "список файлов которые переноси" (the
-list of files being moved). While consolidating the answer, found and
-fixed a small gap: `cli_diagmode`/`cli_changeimei`/`cli_dongle_update`
-(moving from core to `res_simbox_programmator`) had never been assigned a
-destination filename in `02-specifications.md` — every other moved
-function had a named companion file, these three didn't. Named it
-`cli_programmator.c` and updated the spec. No other changes.
-
-## Copyright/Licensing Note (2026-08-26)
-
-User approved requirements + specs, then asked to put the correct
-copyright everywhere: `2014-2026 by Anton Dodonov (NativeMind)`,
-`https://github.com/Anton-Dodonov`, `http://linkedin.com/in/anton-dodonov/`,
-`mailto:anton.v.dodonov@gmail.com`, and to use the NativeMindNONC license
-everywhere (pointing at `libsCpp/asterisk-res-simbox-core/LICENSE` as the
-reference). Done:
-
-- Found the NativeMindNONC `LICENSE` template (used by
-  `libsCpp/asterisk-chan-svistok/`, `libsCpp/asterisk-chan-simbox/`, and
-  already pre-seeded at `libsCpp/asterisk-res-simbox-core/LICENSE`) had an
-  **unfilled placeholder** in all three language sections (Thai/Russian/
-  English): `Copyright Holder: Software Development Company`, dated
-  `2010-2025`.
-- Fixed the placeholder in-place in all three existing files (`chan-svistok`,
-  `chan-simbox`, `res-simbox-core`) and added a `Contact:` line with the
-  github/linkedin/email.
-- Copied the corrected file to the four other module directories:
-  `libsCpp/asterisk-res-simbox-discovery/LICENSE`,
-  `-programmator/LICENSE`, `-reader/LICENSE`, `-hub/LICENSE`.
-- Recorded this as a Constraint in `01-requirements.md` and a "Copyright &
-  Licensing" section in `02-specifications.md`.
-
-**Follow-up (2026-08-26), both questions answered**:
-
-- Source headers in `libsCpp/asterisk-chan-svistok/src/*.c`/`.h` (27
-  files, sibling `sdd-asterisk-chan-svistok` flow's output): user said
-  **replace entirely** with the NativeMind copyright block, **except**
-  `chan_dongle.c`/`chan_dongle.h` specifically — user's rule: "chan_dongle
-  не трогай, там автор bg111, а в остальном дописывал сам Anton Dodonov"
-  (don't touch chan_dongle, its author is bg111; everything else was
-  written by Anton Dodonov himself). Done: 25 of 27 files' leading
-  copyright comment block replaced with the standard 4-line NativeMind
-  header (2 of those 25 — `manager.c`/`app.c` — had the comment nested
-  inside `#ifdef BUILD_MANAGER`/`BUILD_APPLICATIONS` rather than at the
-  very top of the file, handled by hand in place rather than moved).
-  `chan_dongle.c`/`chan_dongle.h` left exactly as they were (bg111's
-  original copyright). Verified afterward: no `bg_one`/`Artem Makhutov`/
-  `Dmitry Vagin` references remain anywhere in
-  `libsCpp/asterisk-chan-svistok/src/` except those same two files.
-- `hub-ctrl.c` — user separately confirmed: "вендорное решение, там
-  copyright не меняй" (vendor solution, don't change its copyright there)
-  — noted as a standing rule for whenever it gets carried into
-  `res_simbox_hub` during this flow's own Implementation later; it
-  doesn't exist in any `src/` yet so nothing to do right now.
-- Flutter LICENSE placeholders — user said fix those too: same targeted
-  fix applied to `libsFlutter/flutter_gsm/LICENSE` and
-  `libsFlutter/flutter_gsmsip/LICENSE`.
-- Confirmed repo-wide: no `Software Development Company`/unfilled
-  copyright-holder placeholder remains in any real `LICENSE` file anywhere
-  (outside `legacy/`/`vendor/`, which are untouched read-only trees).
+Not forked.
 
 ## Next Actions
 
-1. Resolve the two new open questions (`res_simbox_reader`'s adapter-vs-emulator
-   scope; whether `res_simbox_hub` needs real Asterisk module lifecycle at all).
-2. Resolve the pre-existing `pvt_start()` cross-module call question
-   (still the highest-priority item, unaffected by this update).
-3. Get "requirements approved" + "specs approved" once all open questions
-   across both revisions are settled.
-4. Move to Plan phase: now covers five module directories.
+1. **Real-environment verification** (whenever a Linux/Asterisk host is
+   available): build all five modules via their `Makefile`s, fix
+   whatever `ASTERISK_INCLUDE`/`DONGLE_INCLUDE`/etc. paths the real
+   install needs, load all five into a test Asterisk instance, confirm
+   `res_simbox_core` loads standalone with the other four absent (the
+   core requirement this whole split was built around), then confirm it
+   still works correctly with all four present.
+2. Every inline `UNVERIFIED` comment left in the new module-lifecycle
+   files (`chan_dongle.c`'s `pvt_start()` guard, `adiscovery_test.c`'s
+   thread wrapper, both CLI modules) marks a specific thing to check
+   first during that verification pass.
+3. After real-host verification, record exact toolchain/Asterisk version,
+   load/unload matrix, device results, and then mark the flow complete.

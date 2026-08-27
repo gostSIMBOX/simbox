@@ -1,6 +1,6 @@
 # Specifications: res-simbox (module split)
 
-> Version: 1.1
+> Version: 1.2
 > Status: DRAFT
 > Last Updated: 2026-08-26
 > Requirements: [01-requirements.md](01-requirements.md)
@@ -33,6 +33,127 @@ invented**. The one exception, called out below, is a real runtime
 coupling discovered inside `chan_dongle.c` (`pvt_start`) that calls
 directly into programmator's protocol functions — a genuine cross-module
 boundary question, not a source-layout question.
+
+## Version 1.2 Runtime Architecture: Reader and Hub
+
+This section supersedes the v1.1 reader/hub delivery-shape assumptions
+later in this document. Both components produce two artifacts from one
+shared implementation:
+
+| Component | Standalone artifact | Asterisk artifact |
+|---|---|---|
+| Reader | `res-simbox-reader` | `res_simbox_reader.so` |
+| Hub | `res-simbox-hub` | `res_simbox_hub.so` |
+
+`hub-ctrl` remains a compatible build/install alias for existing deploy
+scripts, but it resolves to the same hub implementation rather than a
+third copy.
+
+### Source Composition
+
+Each component has three layers:
+
+1. **Shared implementation** — copied/refactored legacy hardware and
+   protocol behavior, with no Asterisk lifecycle and no process
+   termination. The same objects are linked into both artifacts.
+2. **Standalone adapter** — argument parsing, user output, `main()`, and
+   conversion of the shared return value to process exit status.
+3. **Asterisk adapter** — `AST_MODULE_INFO`, CLI/config integration,
+   optional registration with core, Asterisk logging/result adaptation,
+   and unload cleanup.
+
+The current `reader_cli.c` duplicates the bodies from `adapter.c` and
+`emulator.c`; v1.2 removes that duplication. Each exact legacy sequence
+is extracted once into a callable shared function, and both adapters call
+it. Reference-only files must not remain as a second maintained
+implementation.
+
+The vendored `hub-ctrl.c` keeps its original authorship and copyright.
+Its operational body is made callable without `exit()` so invoking it
+cannot terminate Asterisk. The standalone `main()` is a separate adapter
+over the same body. Asterisk/core headers do not enter the vendored
+operational layer.
+
+### Planned v1.2 Files
+
+Legacy function bodies are moved into these destinations, not retyped:
+
+| File | Responsibility |
+|---|---|
+| `reader/src/reader_core.c/.h` | Existing common reader/TTY implementation |
+| `reader/src/reader_adapter.c` | Callable diagnostic extracted from legacy `adapter.c:main()` |
+| `reader/src/reader_emulator.c` | Callable diagnostic extracted from legacy `emulator.c:main()` |
+| `reader/src/reader_service.h` | Asterisk-free reader contract |
+| `reader/src/reader_main.c` | `res-simbox-reader` entry point selecting adapter/emulator mode |
+| `reader/src/reader_module.c` | Asterisk lifecycle/CLI and core-registration adapter |
+| `hub/src/hub-ctrl.c` | Single vendored hub implementation, refactored to return errors |
+| `hub/src/hub_service.h` | Asterisk-free hub contract |
+| `hub/src/hub_main.c` | `res-simbox-hub` and compatible `hub-ctrl` entry point |
+| `hub/src/hub_module.c` | Asterisk lifecycle/CLI and core-registration adapter |
+| `core/include/res_simbox_component.h` | Versioned public descriptor and operations contract |
+| `core/src/component_registry.c/.h` | Thread-safe registry owned by core; never a module loader |
+
+Paths in the table are relative to the matching
+`libsCpp/asterisk-res-simbox-*` directory.
+
+Reader retains both legacy modes in both delivery forms. Legacy device
+paths `/dev/ttyUSB24` and `/dev/ttyUSB25` remain defaults. An adapter may
+pass an explicit path into the shared function without changing the
+copied APDU/emulator sequence.
+
+### Core Registration Contract
+
+`res_simbox_core` owns a versioned `struct res_simbox_component` carrying
+the ABI version, kind (`reader`/`hub`), stable name, owning
+`struct ast_module *`, availability/status callback, and typed operation
+callbacks. Reader operations cover adapter/emulator actions; hub
+operations cover list, power, and LED actions. Optional quiesce/reload
+callbacks exist only where a component keeps persistent state.
+
+Core exports `res_simbox_component_register()` and
+`res_simbox_component_unregister()` through Asterisk's optional-API
+mechanism. Each child exports small optional descriptor/attach/detach
+entry points too. Every module that provides these symbols uses
+`AST_MODFLAG_GLOBAL_SYMBOLS`, as required by Asterisk 11's
+`optional_api.h`. Both load orders work:
+
+- child after core: register during the child's `load_module()`;
+- core after child: core invokes the already-loaded child's attach entry;
+- child unload: unregister before freeing its state;
+- core unload: invoke each registered child's detach entry, then destroy
+  the registry without unloading the child; the child clears its attached
+  state and continues in independent-module mode.
+
+Dispatch holds an Asterisk module reference for the callback duration.
+Duplicate kind/name registration is rejected. ABI mismatch leaves the
+child independently usable but unregistered and logs the mismatch.
+After detach, the child must not call a cached core callback. A later core
+load discovers the still-loaded child through its global optional
+descriptor/attach API and establishes a fresh registration.
+
+The contract contains no `ast_load_resource()` or
+`ast_unload_resource()` calls. Core never starts, stops, monitors, or
+communicates with standalone processes.
+
+### Resource Ownership
+
+Before opening hardware, either adapter acquires an OS-visible per-device
+lock and releases it on every success, failure, and unload path. A second
+binary/module request for the same device returns an explicit busy
+result; it never takes over implicitly. Registration itself opens no
+hardware and therefore cannot double-initialize a device.
+
+### Build Graph
+
+- Reader shared objects are linked into both `res-simbox-reader` and
+  `res_simbox_reader.so`; only `reader_main.o` versus `reader_module.o`
+  differs.
+- Hub shared objects are linked into both `res-simbox-hub` and
+  `res_simbox_hub.so`; only `hub_main.o` versus `hub_module.o` differs.
+- Standalone targets include no Asterisk headers and link no Asterisk or
+  core objects.
+- Module targets use the public registration header, but load without
+  core because registration is an optional API.
 
 **Prerequisite context from the source flow** (summarized here for
 convenience, not re-derived): the legacy build already composes several
@@ -130,19 +251,31 @@ Recommended **excluded** (likely-abandoned experiment, pending confirmation): `a
 
 ### `libsCpp/asterisk-res-simbox-reader/src/` — SIM reader/emulator module (added v1.1; today: `reader/`, no build-script or module reference found anywhere in legacy)
 
+**Superseded delivery shape:** v1.2 replaces the module-only duplicated
+CLI implementation with the shared implementation and two adapters
+specified above. The legacy inventory in this subsection remains valid.
+
 `reader_core.c` **[new]**, `reader_core.h` **[new]** (currently `#include`s `../programmator/tty_v2.c` — that relative include needs re-pointing once both modules' final paths are fixed, a Plan-phase task), `adapter.c` **[new]**, `emulator.c` **[new]** (both `#include "reader_core.c"` today)
 
 Excluded (nested stale duplicates, same rationale as top-level `old/`): `reader/old/comport.pas`, `reader/old/copy.c`, `reader/old/test.c`
 
 Non-code: `reader/g.sh` (unreviewed helper script — carry forward, review during Plan phase)
 
-**Open question carried from Requirements v1.1**: `adapter.c` and `emulator.c` are two different legacy entry points over the same `reader_core.c` (pass-through-to-real-hardware vs. simulated-reader-for-testing) — whether the module needs to expose both modes (e.g. config-selected) or just one is not decided; restructuring their hand-rolled `main()`s into a single module's `load_module()`/`unload_module()` lifecycle is required either way, same caveat as `res_simbox_discovery`/`res_simbox_programmator`.
+**Resolved by v1.2:** both adapter and emulator modes remain available in
+both delivery forms and share their extracted callable implementations.
 
 ### `libsCpp/asterisk-res-simbox-hub/src/` — USB hub power-control module (added v1.1; today: standalone `hub-ctrl.c`)
 
+**Superseded delivery shape:** v1.2 requires both a standalone artifact
+and an independently loadable/core-registering Asterisk module, backed by
+the same vendored operational implementation.
+
 `hub-ctrl.c` **[new]** (vendored third-party, unmodified from legacy — attribution comment should note it is vendored, not Svistok-authored)
 
-**Zero coupling found**: unlike every other module in this flow, a full-tree grep found `hub-ctrl.c` referenced *only* by `upgrade.sh`/`upgrade_prog.sh`'s ad-hoc `gcc hub-ctrl.c -lusb -o hub-ctrl` build step — never called from `chan_dongle.c` or any other legacy source. No other "hub work" exists elsewhere to also carve out. This makes `res_simbox_hub` the cleanest possible module boundary in this flow, but also raises the open question (Requirements v1.1) of whether it needs to be a real Asterisk module at all, versus staying the standalone CLI utility it already is, just relocated.
+**Zero legacy coupling found**: a full-tree grep found `hub-ctrl.c`
+referenced only by `upgrade.sh`/`upgrade_prog.sh`'s ad-hoc build step.
+The core relationship introduced by v1.2 is therefore explicit
+lifecycle/coordination glue, not a newly discovered legacy coupling.
 
 ### Dead code — recommend excluding from all modules (confirm with user before Plan phase)
 
@@ -164,6 +297,12 @@ Non-code: `reader/g.sh` (unreviewed helper script — carry forward, review duri
 | `adiscovery_core.c` vs `adiscovery_core_new.c` | Migrating `simnode/` into `res_simbox_discovery` | Use `adiscovery_core.c` (referenced by 2 of 3 entry points); flag `adiscovery_core_new.c` as likely-abandoned for user confirmation before excluding outright. |
 | Two different `ttyprog_core.c`/`tty_v2.c` variants (top-level/`old/` vs `programmator/`) | Migrating firmware-flashing code into `res_simbox_programmator` | Use only the `programmator/` (live, longer) variant; do not migrate the stale top-level/`old/` copies. |
 | Hand-rolled `main()` in `adiscovery_svistok.c`/`ttyprog_programmator.c` | Promoting standalone binaries to real Asterisk modules | Relocate setup/loop logic into `load_module()`/`unload_module()`-shaped entry points, reusing `chan_dongle.c`'s own registration pattern as the template (working assumption, unconfirmed). |
+| Reader/hub child loads before core | Valid independent-module load order | Child works independently; core's later load calls its optional attach entry. |
+| Core loads before reader/hub child | Valid managed-mode load order | Child registers from its own `load_module()`. |
+| Core unloads while child stays loaded | Core is optional | Registry detaches; child continues independently. |
+| Child unload races with core dispatch | Operator unload during managed action | Dispatch holds a module reference; unregister prevents new calls. |
+| Binary and module select the same device | Cross-process ownership conflict | Per-device lock rejects the second owner as busy. |
+| Vendored hub path calls `exit()` | Operational code invoked inside Asterisk | Return status to the adapter; only `hub_main.c` exits the process. |
 
 ## Open Design Questions
 
@@ -201,20 +340,17 @@ Non-code: `reader/g.sh` (unreviewed helper script — carry forward, review duri
 - [ ] Confirm `adiscovery_core_new.c` / `adiscovery_simnode.c` are safe to
       exclude as abandoned experiments.
 - [x] **Resolved 2026-08-26**: `reader/` becomes its own module,
-      `res_simbox_reader` — see "Planned Module Layout" above. Remaining
-      sub-question: whether it needs to support both its `adapter`/
-      `emulator` legacy entry points or just one.
+      `res_simbox_reader` — see "Planned Module Layout" above. v1.2 also
+      resolves the sub-question: both `adapter` and `emulator` remain.
 - [x] **Resolved 2026-08-26**: `hub-ctrl.c` becomes its own module,
       `res_simbox_hub`, not folded into `res_simbox_programmator` as v1.0
-      tentatively proposed. Remaining sub-question: whether it needs real
-      Asterisk module lifecycle at all, given it has zero coupling to any
-      other legacy code (see "Planned Module Layout" above).
-- [ ] `res_simbox_reader`: does the module need to support both `adapter.c`
-      (real-hardware pass-through) and `emulator.c` (simulated reader)
-      modes, or just one?
-- [ ] `res_simbox_hub`: real Asterisk module (own `AST_MODULE_INFO`) vs. staying
-      the standalone `gcc`-built CLI utility it already is today, just
-      relocated under `libsCpp/asterisk-res-simbox-hub/`?
+      tentatively proposed. v1.2 requires both module and binary forms.
+- [x] `res_simbox_reader`: both adapter and emulator modes in standalone
+      and Asterisk forms.
+- [x] `res_simbox_hub`: both real Asterisk module (`AST_MODULE_INFO`) and
+      standalone executable, sharing one implementation.
+- [x] Core management: Asterisk loads/unloads modules; core coordinates
+      already-loaded registered modules and never supervises binaries.
 - [ ] Confirm the "one companion file per host" grouping for `NEW`
       functions in core vs. the feature-based alternative grouping.
 - [ ] **Inherited from the source flow, still relevant to core**: wrapper
@@ -226,15 +362,29 @@ Non-code: `reader/g.sh` (unreviewed helper script — carry forward, review duri
 
 ## Testing Strategy
 
-Deferred to Plan phase (no compatible Linux/Asterisk build environment
-available in this development environment). Recommend, at minimum: a
-per-file byte-diff assertion that every MODIFIED/NEW function body in each
-module's `src/` matches its legacy source character-for-character, a
-link-time symbol check that every UNCHANGED function name resolves to
-exactly one definition, and — specific to this flow — a standalone-load
-test confirming `res_simbox_core` loads and its core CLI/AMI/channel
-functionality works with `res_simbox_discovery` and
-`res_simbox_programmator` both absent.
+The Plan adds tests before v1.2 transfer/refactoring wherever the legacy
+seams permit it. Stable legacy behavior is the oracle.
+
+Minimum automated matrix:
+
+1. provenance assertions showing each extracted reader/hub operation
+   originates in the matching legacy body and has one shared definition;
+2. host-side tests using mock/injected TTY and USB boundaries for argument
+   translation, result propagation, and cleanup without physical devices;
+3. standalone-adapter tests for both reader modes and hub list/power/LED;
+4. Asterisk-adapter tests using available Asterisk 11 headers/stubs for
+   load/unload, CLI registration, cleanup, and operation without core;
+5. registry tests for both load orders, duplicate registration, ABI
+   mismatch, either unload order, and callback/unload races;
+6. build/link assertions that both artifacts use the common objects,
+   standalone binaries have no Asterisk dependency, and public symbols
+   have exactly one definition;
+7. lock tests proving two owners of one synthetic device cannot proceed
+   while different devices remain independent.
+
+Real Asterisk and USB/TTY integration remains deferred to a compatible
+Linux host. It must cover both binaries, each `.so` without core, each
+`.so` registered with core, and core with both absent.
 
 ## Copyright & Licensing (added 2026-08-26)
 
@@ -270,7 +420,11 @@ copyright must be preserved unchanged ("вендорное решение, та�
 
 ## Approval
 
-- [x] Reviewed by: Anton
-- [x] Approved on: 2026-08-26
-- [x] Notes: see `01-requirements.md`'s Approval notes — open questions
+- [x] Version 1.1 reviewed by: Anton
+- [x] Version 1.1 approved on: 2026-08-26
+- [x] Version 1.1 notes: see `01-requirements.md`'s Approval notes — open questions
       carried to Plan phase.
+- [x] Version 1.2 reviewed by: Anton
+- [x] Version 1.2 approved on: 2026-08-26
+- [x] Version 1.2 notes: shared implementations, two delivery forms,
+      optional core registration, and option-A lifecycle approved.

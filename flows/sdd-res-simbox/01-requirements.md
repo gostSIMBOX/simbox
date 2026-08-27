@@ -1,6 +1,6 @@
 # Requirements: res-simbox (module split)
 
-> Version: 1.1
+> Version: 1.2
 > Status: DRAFT
 > Last Updated: 2026-08-26
 
@@ -118,6 +118,122 @@ flow).
       others do. Flagging rather than assuming "make it a module" is
       right just because the other two were.
 
+## Version 1.2 Revision: Three Runtime Modes for Reader and Hub
+
+**2026-08-26** — the user expanded the required runtime shape of
+`res-simbox-reader` and `res-simbox-hub`. Each component must support all
+three modes below; choosing one mode must not remove either of the other
+two:
+
+1. **Standalone binary** — executable without an Asterisk process and
+   without `res_simbox_core`.
+2. **Independent Asterisk module** — independently loadable/unloadable
+   `.so` with its own Asterisk module lifecycle, usable while
+   `res_simbox_core` is absent or unloaded.
+3. **Core-managed Asterisk module** — while loaded together with
+   `res_simbox_core`, the component can operate under the core module's
+   coordination rather than as an unrelated peer.
+
+The user selected management option **A**: Asterisk remains responsible
+for loading and unloading `res_simbox_reader.so` and
+`res_simbox_hub.so`. When core and a child module are both loaded, the
+child registers its capability with `res_simbox_core`, and core
+coordinates its operation through that explicit interface. Core must not
+load/unload the child module itself.
+
+The required Asterisk artifacts are `res_simbox_reader.so` and
+`res_simbox_hub.so`. Names of the standalone executable targets are a
+build-level decision to be fixed in Specifications; retaining compatible
+legacy names may be required for deployment scripts.
+
+The standalone executable and Asterisk module for a component must reuse
+the same underlying legacy implementation. Their entry points and
+lifecycle adapters may differ, but the hardware/protocol behavior must
+not be maintained as two divergent copies.
+
+Standalone executables are optional deliverables for end users who need
+reader or hub functionality outside Asterisk. They are not child
+processes of `res_simbox_core`: core must neither start, stop, monitor,
+nor otherwise supervise them.
+
+"Core-managed" is not permission for duplicate initialization or
+simultaneous, uncoordinated ownership of the same reader or hub. The
+eventual design must define one owner for each physical resource and
+produce a deterministic refusal or handover when another runtime mode
+already owns it.
+
+`res_simbox_core` remains independently usable: reader and hub are
+optional capabilities, and their absence or failure to load must not
+prevent core from loading and providing its own functionality.
+
+### User Stories (v1.2)
+
+**As an operator outside Asterisk**
+**I want** reader and hub functionality to remain available as standalone
+executables
+**So that** diagnostics, maintenance, and deployments that do not run
+Asterisk do not depend on it.
+
+**As an Asterisk administrator**
+**I want** `res_simbox_reader.so` and `res_simbox_hub.so` to load and work
+independently
+**So that** either capability can be deployed without
+`res_simbox_core`.
+
+**As a simbox operator**
+**I want** the same modules to work under `res_simbox_core` coordination
+when core is present
+**So that** the complete system has one control plane and a consistent
+lifecycle without sacrificing independent use.
+
+### Acceptance Criteria (v1.2)
+
+7. **Given** Asterisk and `res_simbox_core` are not running
+   **When** the reader standalone executable is started
+   **Then** it exposes the applicable legacy reader functionality without
+   requiring either of them.
+
+8. **Given** Asterisk and `res_simbox_core` are not running
+   **When** the hub standalone executable is started
+   **Then** it exposes the applicable legacy hub functionality without
+   requiring either of them.
+
+9. **Given** Asterisk is running and `res_simbox_core` is absent/unloaded
+   **When** `res_simbox_reader.so` is loaded, used, reloaded where
+   supported, and unloaded
+   **Then** its reader lifecycle and operations work independently and
+   clean up owned resources on unload.
+
+10. **Given** Asterisk is running and `res_simbox_core` is absent/unloaded
+    **When** `res_simbox_hub.so` is loaded, used, reloaded where supported,
+    and unloaded
+    **Then** its hub lifecycle and operations work independently and
+    clean up owned resources on unload.
+
+11. **Given** `res_simbox_core` and either child module are both loaded
+    **When** managed operation is activated
+    **Then** core and the child use an explicit coordination contract,
+    the child remains independently unloadable, and no physical resource
+    is initialized or controlled twice.
+
+12. **Given** reader or hub is absent, fails, or is unloaded
+    **When** `res_simbox_core` loads or continues running
+    **Then** core remains operational and reports the optional capability
+    as unavailable instead of acquiring a hard load-time dependency.
+
+13. **Given** both delivery forms of one component
+    **When** their source composition is audited
+    **Then** the standalone executable and Asterisk module share the same
+    copied legacy business implementation; only entry-point, lifecycle,
+    and explicitly approved coordination glue may be mode-specific.
+
+### Resolved Question (v1.2)
+
+- [x] **Core-management boundary** — option **A**, confirmed by the user
+      on 2026-08-26. Asterisk loads/unloads the modules; core coordinates
+      already-loaded modules through registration. Standalone binaries
+      are end-user tools and are never supervised by core.
+
 ## Hard Constraint
 
 **"Файлы НЕЛЬЗЯ ДОПИСЫВАТЬ, НЕЛЬЗЯ СОЗДАВАТЬ, можно только
@@ -222,6 +338,8 @@ otherwise need.
 - Inventing new inter-module APIs/business logic to fully resolve the
   `pvt_start()` coupling (see Open Questions) — options are documented,
   none chosen yet.
+- Treating a standalone reader/hub process and its Asterisk module as
+  simultaneous owners of the same physical device.
 
 ## Open Questions
 
@@ -264,9 +382,14 @@ otherwise need.
 
 ## Approval
 
-- [x] Reviewed by: Anton
-- [x] Approved on: 2026-08-26
-- [x] Notes: approved with the remaining Open Questions (pvt_start()
+- [x] Version 1.1 reviewed by: Anton
+- [x] Version 1.1 approved on: 2026-08-26
+- [x] Version 1.1 notes: approved with the remaining Open Questions (pvt_start()
       coupling; res_simbox_reader adapter-vs-emulator scope;
       res_simbox_hub module-or-standalone) carried forward to be resolved
       during Plan phase, not blocking approval.
+- [x] Version 1.2 reviewed by: Anton
+- [x] Version 1.2 approved on: 2026-08-26
+- [x] Version 1.2 notes: management scope resolved as option A;
+      standalone binaries are optional tools for end users and are not
+      supervised by core.

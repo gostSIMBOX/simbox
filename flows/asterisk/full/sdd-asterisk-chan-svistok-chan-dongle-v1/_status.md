@@ -1,5 +1,15 @@
 # Status: sdd-asterisk-chan-svistok-chan-dongle
 
+## SUPERSEDED
+
+**2026-08-26**: this flow is superseded by
+`flows/asterisk-chan-svistok/sdd-asterisk-chan-svistok-chan-dongle-v2/`.
+Its classification content (Full File Inventory, Function-Level
+Classification, Header Changes, Build System Changes) was carried forward
+into v2 unchanged and remains valid — nothing here was wrong. This flow
+is left as-is (not deleted) for history; do not continue work in this
+directory, use v2 instead.
+
 ## Current Phase
 
 SPECIFICATIONS
