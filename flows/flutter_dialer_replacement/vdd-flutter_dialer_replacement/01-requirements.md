@@ -188,13 +188,18 @@ implementations doing the same job differently.
    Flutter-only superset addition beyond the ported interface. Don't
    silently keep it and call the result "matching" without saying so.
 2. **Given** the disconnected `TeleService`, **when** Specifications are
-   written, **then** they decide explicitly: does `flutter_dialer` own a
-   real (if minimal) `InCallService` implementation that bridges call
-   events to Dart, or does it delegate the actual call-state work to
-   `flutter_tele`'s existing 520-line implementation and own only the
-   default-dialer *role* (`isDefaultDialer`/`setDefaultDialer`/
-   `canSetDefaultDialer` + the launcher/DIAL/CALL intent filters)? No
-   silent middle ground — pick one and justify it.
+   written, **then** `flutter_dialer` delegates actual call-state work to
+   `flutter_tele`'s existing 520-line `InCallService` implementation
+   (**decided**, 2026-08-31) and owns only the default-dialer *role*
+   (`isDefaultDialer`/`setDefaultDialer`/`canSetDefaultDialer` + the
+   launcher/DIAL/CALL/`tel:` intent filters). Specifications determine
+   the concrete mechanism (manifest ownership, delegation channel)
+   for wiring `flutter_dialer`'s role-holder status to `flutter_tele`'s
+   call handling.
+2a. **Given** call-log/caller-ID was promoted to Must-Have (2026-08-31),
+   **when** Visual mockups are drawn, **then** they include a call-log/
+   recent-calls screen with caller-ID display (via `READ_CONTACTS`,
+   display-only, no contact management).
 3. **Given** `GatewayDialerModule.kt`'s gateway-flavored dialing logic
    currently lives in `flutter_gsm`, **when** this flow's Visual/Specs
    phases proceed, **then** no screen, method, or channel in
@@ -233,14 +238,7 @@ implementations doing the same job differently.
 
 ### Should Have
 
-- A minimal call log / recent-calls view — Android users expect *some*
-  call history from their phone app; without it, switching default
-  dialer to this app is a functional regression for the user. Confirm
-  scope in Visual phase rather than assuming it's in or out.
-- Caller-ID lookup via `READ_CONTACTS` (**display only**, not contact
-  management) for incoming calls — flagged, not assumed; decide in
-  Specifications whether this crosses the "only a replacement" line or
-  is table-stakes for a phone app.
+(Call-log/caller-ID promoted to Must Have — see AC2a above.)
 
 ### Won't Have (This Iteration)
 
@@ -279,34 +277,42 @@ implementations doing the same job differently.
   away even though they're "more than role management," because they
   *are* the role. AC2 decides how, not whether.
 
-## Open Questions
+## Open Questions — RESOLVED (2026-08-31, Anton)
 
-- [ ] AC1b: drop `canSetDefaultDialer()` for literal parity with
-      `react-native-replace-dialer`, or keep as a documented addition?
-      Leaning toward keeping (it's non-breaking, useful, and the
-      reference's absence of it looks more like an omission than a
-      deliberate design choice) — confirm with Anton rather than assume.
-- [ ] Should `flutter_dialer` also reproduce the reference's exact
-      internal fragility (no null-check on
-      `telecomManager.getDefaultDialerPackage()`, a latent NPE risk on
-      some OEMs), or is "interface match" scoped to public method
-      names/contracts/observable-behavior only, with internal
-      defensive-coding improvements allowed? This flow's working
-      assumption is the latter (public interface parity, not bug-for-bug
-      internal parity) — flagged for explicit confirmation since the
-      mandate could be read more strictly.
-- [ ] Does `flutter_gsmsip`'s GSM auto-answer path
-      (`_modemRepo.answerCall()`, likely AT-command/RIL-level) actually
-      require the app to be the Android default dialer at all, or is
-      that entirely independent of the `TelecomManager` role this
-      package manages? Determines whether `flutter_dialer` is a hard
-      dependency of the gateway story or an optional "also take over the
-      phone app" feature.
-- [ ] `flutter_tele` vs. `flutter_dialer` `TeleService` — which becomes
-      canonical (AC2)? Needs Anton's call given both are real,
-      independently-written implementations.
-- [ ] Call-log/caller-ID scope (Should-Have items above) — in or out for
-      v1? Confirm in Visual phase.
+- [x] **AC1b — `canSetDefaultDialer()`**: **keep**, documented explicitly
+      as a Flutter-only superset addition beyond the ported
+      `react-native-replace-dialer` interface (not silently presented as
+      1:1 parity). Anton's direction: don't touch the RN reference
+      package as part of this decision — this is `flutter_dialer`'s own
+      call to make.
+- [x] **Interface-parity scope**: **public interface parity only.**
+      `flutter_dialer` matches the reference's method
+      names/contracts/observable behavior (including the pre-API-23
+      short-circuit), but internal defensive-coding improvements are
+      allowed and expected — e.g. adding the null-check on
+      `telecomManager.getDefaultDialerPackage()` that the reference
+      lacks. Not bug-for-bug internal parity.
+- [x] **AC2 — canonical `InCallService`**: **`flutter_tele`'s** 520-line
+      implementation becomes canonical. `flutter_dialer` does **not**
+      grow its own real call-state `InCallService` — it owns only the
+      default-dialer *role* (`isDefaultDialer`/`setDefaultDialer`/
+      `canSetDefaultDialer` + the launcher/DIAL/CALL/`tel:` intent
+      filters). Architecture of how `flutter_dialer`'s manifest-bound
+      `TeleService.kt` stub relates to `flutter_tele`'s implementation
+      (thin delegate vs. removed in favor of `flutter_tele` owning the
+      manifest entry) is a Specifications-phase decision — but the
+      direction is set: `flutter_tele` is where real call-state logic
+      lives, `flutter_dialer` does not duplicate it.
+- [x] **Call-log/caller-ID scope**: **in scope for v1.** Promoted from
+      Should-Have to Must-Have. Visual phase includes a call-log/
+      recent-calls screen. Caller-ID display (via `READ_CONTACTS`,
+      display-only) is included as part of the same in-scope item.
+- [ ] Still open, non-blocking for this flow's Visual phase: does
+      `flutter_gsmsip`'s GSM auto-answer path
+      (`_modemRepo.answerCall()`) actually require default-dialer status,
+      or is it independent of the `TelecomManager` role? This affects
+      `flutter_gsmsip`'s own flow, not `flutter_dialer`'s mockups —
+      carried forward as a cross-flow note rather than re-asked here.
 
 ## References
 
@@ -326,6 +332,7 @@ implementations doing the same job differently.
 
 ## Approval
 
-- [ ] Reviewed by: Anton
-- [ ] Approved on:
-- [ ] Notes:
+- [x] Reviewed by: Anton
+- [x] Approved on: 2026-08-31
+- [x] Notes: All 5 Open Questions resolved same session (see "Open
+      Questions — RESOLVED" above). Approved to proceed to Visual phase.

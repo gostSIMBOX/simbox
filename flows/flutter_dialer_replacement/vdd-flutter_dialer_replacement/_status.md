@@ -2,33 +2,43 @@
 
 ## Current Phase
 
-**REQUIREMENTS** | VISUAL | SPECIFICATIONS | PLAN | IMPLEMENTATION | DOCUMENTATION
+REQUIREMENTS | VISUAL | SPECIFICATIONS | PLAN | **IMPLEMENTATION** | DOCUMENTATION
 
 ## Phase Status
 
-DRAFTING
+IN PROGRESS (Plan approved 2026-08-31; starting Phase 1)
 
 ## Last Updated
 
-2026-08-31 by Claude (added interface-parity mandate against the actual
-`react-native-replace-dialer` source, corrected an earlier
-mischaracterization of the top-level `tdd-replace-dialer` doc)
+2026-08-31 by Claude (Plan approved as drafted, no changes; beginning
+Implementation task-by-task per 04-plan.md's order)
 
 ## Blockers
 
-- Awaiting Anton's "requirements approved" (or requested changes).
-- Five Open Questions need answers before Visual can lock down screens:
-  keep-or-drop `canSetDefaultDialer()` for literal interface parity,
-  scope of "interface match" (public contract vs. internal bug-for-bug
-  fragility), default-dialer's actual necessity for GSM auto-answer,
-  which `TeleService` becomes canonical, and call-log/caller-ID scope.
+- None currently blocking Implementation start.
+- One non-blocking open item carried forward (does not block this flow):
+  whether `flutter_gsmsip`'s GSM auto-answer path actually requires
+  default-dialer status — affects `flutter_gsmsip`'s own flow, not this
+  one's mockups.
+- Separate, out-of-band item raised by Anton: `react-native-replace-dialer`
+  (the reference package) has its own unfixed callback-timing bug,
+  already documented in its own `flows/adr-001-activity-result/` +
+  `flows/tdd-replace-dialer/`. Recommended NOT to open a new VDD flow for
+  it (no UI/visual change involved, it's a native-bridge bug fix) —
+  resume/complete its existing `tdd-replace-dialer` flow instead, as a
+  separate task, whenever Anton wants it addressed. Not started.
 
 ## Progress
 
 - [x] Requirements drafted
-- [ ] Requirements approved
-- [ ] Visual drafted
-- [ ] Visual approved
+- [x] Requirements approved (2026-08-31)
+- [x] Visual drafted
+- [x] Visual approved (2026-08-31)
+- [x] Specifications drafted
+- [x] Specifications approved (2026-08-31)
+- [x] Plan drafted
+- [x] Plan approved (2026-08-31)
+- [x] Implementation started
 - [ ] Specifications drafted
 - [ ] Specifications approved
 - [ ] Plan drafted
@@ -116,10 +126,13 @@ N/A — new flow, not a fork.
 
 ## Next Actions
 
-1. Get "requirements approved" from Anton, plus answers to the three
-   Open Questions (GSM auto-answer's actual dependency on default-dialer
-   status, `flutter_tele` vs. `flutter_dialer` `TeleService` canonicity,
-   call-log/caller-ID in-or-out).
-2. On approval, draft `02-visual.md`: ASCII mockups for default-dialer
-   status/setup, incoming call, active call, dial pad — and, if scoped
-   in, call log. No gateway/GSM/SIP visual language anywhere.
+1. Get "plan approved" from Anton on `04-plan.md` (4 phases, 15 tasks,
+   dependency graph, risk assessment). Highest-risk item flagged there:
+   Task 3.4 (Incoming/Active Call screens) is High complexity because
+   `flutter_tele`'s SIP-flavored `TeleCall` shape (e.g. `remoteUri`
+   parsing) may not map cleanly onto the approved mockups — budget
+   adaptation time, not a blocker to starting.
+2. On approval, begin Implementation phase task-by-task in the plan's
+   order (Phase 1 -> 2 -> 3 -> 4), logging progress in
+   `05-implementation-log.md` after each task per this flow's own
+   conventions.

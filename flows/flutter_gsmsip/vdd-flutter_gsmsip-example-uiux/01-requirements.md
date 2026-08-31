@@ -151,7 +151,19 @@ screen
    **when** the example checks default-dialer status, **then** it shows
    granted/not-granted plainly and — if not granted — explains the user
    must set it via Android Settings, without this flow adding new native
-   dialer-replacement code to `flutter_gsmsip`.
+   dialer-replacement code to `flutter_gsmsip`. **Confirmed with Anton
+   (2026-08-31)**: this is a warn, not a hard block on the UI — but the
+   warning must state the real functional consequence precisely, not a
+   generic "some features may not work": without default-dialer status,
+   **incoming GSM calls cannot be auto-answered/bridged to SIP**
+   (`GatewayService._handleIncomingGsmCall()`'s `InCallService` hook never
+   fires), while everything else keeps working — outbound SIP→GSM
+   dial-out, manual test calls/SMS, Logs, Settings. This must be
+   **proactively surfaced to the user**, not just a passive status row the
+   user has to notice: a persistent banner on the Gateway screen while
+   unset, plus a one-time in-context alert the first time gateway mode is
+   armed with default-dialer still unset (see 02-visual.md for the
+   mockup).
 5. **Given** the **Permission Audit** findings below, **when**
    Specifications are written, **then** they include a concrete
    permission-declaration fix plan scoped per package (which permissions
@@ -165,11 +177,13 @@ screen
    covers only the example's own manifest and cross-references.
 6. **Given** `/nativemind-designsystem`, **when** the example is
    restyled, **then** it adopts the DS's neutral+semantic tokens with a
-   single accent colorway (the `Blue/Pro` VPN-family accent is the
-   closest fit for a telephony gateway tool — confirm in Visual phase),
-   replacing the bespoke `example/lib/theme/app_*.dart` files, and
+   single accent colorway — **confirmed with Anton (2026-08-31): Green**
+   — replacing the bespoke `example/lib/theme/app_*.dart` files, and
    respects the DS's rules (one shadow, no scattered accent gradient,
-   Lucide-style icons, no emoji in product copy).
+   Lucide-style icons, no emoji in product copy). The existing
+   purpose-built widgets (`signalIndicator`, `connectionIndicator`,
+   `callStatusIndicator`, `statusCard`) are **re-skinned with DS tokens,
+   not replaced** — confirmed with Anton, same date.
 7. **Given** `/nativemind-flutter-splash`, **when** the example is
    restyled, **then** it gets the standard NativeMind splash treatment
    (native launch screen on Android — zero hand-written splash code
@@ -304,22 +318,19 @@ two.
 
 ## Open Questions
 
-- [ ] Multi-profile config and the capability-model question are now
+- [x] **Resolved (2026-08-31)** — Which DS accent colorway: **Green**.
+- [x] **Resolved (2026-08-31)** — Existing purpose-built widgets
+      (`signalIndicator`, `connectionIndicator`, `callStatusIndicator`,
+      `statusCard`, `theme/README.md`/`app_widgets.dart`): **re-skinned
+      with DS tokens, not replaced**.
+- [x] **Resolved (2026-08-31)** — Default Dialer card: **warn, not
+      block**, but the warning must name the precise functional
+      consequence (incoming-call auto-answer/bridging is dead; everything
+      else still works) and be proactively surfaced, not passive. See
+      updated AC4 above and 02-visual.md.
+- [ ] Multi-profile config and the capability-model question are still
       owned by `sdd-flutter_gsmsip-lib`'s own Open Questions — tracked
       there, not duplicated here. This flow just waits on its answer.
-- [ ] Should the "Default Dialer" status card block gateway start (like
-      `gsm2sip` effectively requires being the default phone app for
-      `InCallService` to fire), or just warn? Depends on what
-      `flutter_replace_dialer` actually ships — flag as a dependency,
-      don't assume.
-- [ ] Which DS accent colorway (Blue/Green/Orange/Pink) — confirm with
-      Anton in the Visual phase rather than assuming Blue/Pro.
-- [ ] `flutter_gsmsip/example`'s current `theme/README.md` and
-      `app_widgets.dart` (kept intentionally by the prior flow — see its
-      `_status.md` Context Notes) — do these get replaced wholesale by
-      the DS, or do the purpose-built indicators (`signalIndicator`,
-      `connectionIndicator`, `callStatusIndicator`, `statusCard`) get
-      re-skinned with DS tokens instead of deleted?
 
 ## References
 
@@ -332,6 +343,7 @@ two.
 - `flows/flutter_gsmsip/vdd-dialer/` — approved bridge/route visual language to reuse
 - `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux/` — sibling UI/UX flow for the same example app, umbrella for TTY/Telecom/Enhanced-Mode/Dongle voice-line access; its "Enhanced Mode" screen overlaps this flow's System Capabilities panel (AC3) — coordinate before building either
 - `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-zatychka-uiux/` — sibling UI/UX flow for dongle configuration, a dependency of voiceline-uiux
+- `flows/flutter_gsmsip/sdd-gateway-answer-keyevent-magisk/`, `sdd-gateway-answer-itelephony-magisk/`, `sdd-gateway-answer-directmodem-magisk/` — parked (REQUIREMENTS-only, not to be implemented) documentation of non-standard ways to auto-answer a GSM call without default-dialer status; AC4's warn-only resolution stands regardless of these
 - `~/.claude/skills/nativemind-designsystem/`, `~/.claude/skills/nativemind-flutter-splash/`
 
 ---
@@ -340,4 +352,9 @@ two.
 
 - [x] Reviewed by: Anton
 - [x] Approved on: 2026-08-31
-- [ ] Notes:
+- [x] Notes: 2026-08-31 — three Visual-phase Open Questions resolved:
+      accent colorway = Green (AC6); existing purpose-built widgets
+      re-skinned with DS tokens, not replaced (AC6); Default Dialer card
+      warns rather than blocks, but must name the precise consequence
+      (incoming-call auto-answer/bridging breaks; everything else keeps
+      working) and be proactively surfaced to the user, not passive (AC4).

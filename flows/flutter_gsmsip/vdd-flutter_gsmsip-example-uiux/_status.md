@@ -2,36 +2,48 @@
 
 ## Current Phase
 
-REQUIREMENTS | **VISUAL** | SPECIFICATIONS | PLAN | IMPLEMENTATION | DOCUMENTATION
+REQUIREMENTS | VISUAL | SPECIFICATIONS | **PLAN** | IMPLEMENTATION | DOCUMENTATION
 
 ## Phase Status
 
-APPROVED | **DRAFTING**
+APPROVED | APPROVED | APPROVED | **DRAFTING**
 
 ## Last Updated
 
-2026-08-31 by Claude (Anton approved 01-requirements.md — moving to VISUAL)
+2026-08-31 by Claude (Anton approved 03-specifications.md. Drafted
+04-plan.md: 7 phases covering AC1/AC4-AC8 only — Default Dialer data
+layer, DS restyle, Gateway screen rework, Default Dialer UI, permission
+manifest comments, splash invocation, verification. Real file paths
+throughout, e.g. confirmed exact rename target `dashboard_screen.dart` →
+`gateway_screen.dart` and its `main.dart` wiring by reading the actual
+`RootShell`/`_tabs` structure. AC2/AC3 explicitly excluded from this
+plan pending `sdd-flutter_gsmsip-lib`.)
 
 ## Blockers
 
-- AC2 (multi-profile config) and AC3 (Magisk-capability display) are still
-  gated on `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` reaching
-  Specifications — mockups for those screens can proceed, but don't lock
-  their data model until that flow settles.
-- Before drafting the Capabilities/Enhanced-Mode surface, coordinate with
-  `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux` (its
-  "Enhanced Mode" screen covers similar ground) so the two flows don't
-  mock up two competing versions of the same screen.
+- Awaiting Anton's "plan approved" (or requested changes) on
+  `04-plan.md`.
+- Task 5.2 in the plan is an open checkpoint needing Anton's explicit
+  yes/no on removing `RECEIVE_MMS`/`RECEIVE_WAP_PUSH` from the example
+  manifest — not blocking plan approval itself, but blocking that one
+  task during Implementation.
+- AC2 (multi-profile config) and AC3 (Magisk-capability display) remain
+  gated on `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` (still in
+  REQUIREMENTS as of this update) — no plan exists for them yet, by
+  design.
+- Capabilities screen overlap with `vdd-flutter_gsmsip-example-voiceline-uiux`'s
+  "Enhanced Mode" screen is flagged but not yet resolved — irrelevant to
+  this plan (AC3 isn't in it), relevant again once AC3 gets its own plan.
 
 ## Progress
 
 - [x] Requirements drafted
 - [x] Requirements approved
-- [ ] Visual drafted
-- [ ] Visual approved
-- [ ] Specifications drafted
-- [ ] Specifications approved
-- [ ] Plan drafted
+- [x] Visual drafted
+- [x] Visual approved
+- [x] Specifications drafted
+- [x] Specifications approved
+- [x] Plan drafted
 - [ ] Plan approved
 - [ ] Implementation started
 - [ ] Implementation complete
@@ -102,14 +114,14 @@ Key decisions and context for resuming:
 
 ## Next Actions
 
-1. Draft ASCII mockups in `02-visual.md` for the new/evolved screens:
-   Gateway mode, multi-profile Setup, System Capabilities, Default Dialer
-   status card — plus DS-restyled versions of the existing 6 screens and
-   the splash screen.
-2. Reuse `flows/flutter_gsmsip/vdd-dialer`'s approved "Bridge call
-   status: SIP leg + GSM leg" visual language for the Gateway screen
-   rather than inventing new vocabulary.
-3. Resolve the accent-colorway Open Question with `/nativemind-designsystem`
-   before finalizing mockups.
-4. Wait for explicit "visual approved" from Anton before moving to
-   SPECIFICATIONS.
+1. Get explicit "specs approved" from Anton on `03-specifications.md`,
+   or incorporate requested changes.
+2. Resolve the Capabilities/Enhanced-Mode overlap with
+   `vdd-flutter_gsmsip-example-voiceline-uiux` before AC3's screen is
+   built out (does not block approving the rest of this document).
+3. Watch `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` — once it reaches
+   Specifications, come back and replace this document's Deferred
+   `GatewayProfileSketch`/`CapabilityFlagSketch` placeholders with real
+   types before Plan locks AC2/AC3.
+4. On approval, move to PLAN: task breakdown for AC1/AC4-AC8 (AC2/AC3
+   plan separately once unblocked).
