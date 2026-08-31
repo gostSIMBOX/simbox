@@ -1,20 +1,31 @@
-# Status: vdd-voiceline
+# Status: vdd-flutter_gsmsip-example-voiceline-uiux
 
 ## Current Phase
 
-REQUIREMENTS | VISUAL | SPECIFICATIONS | PLAN | **IMPLEMENTATION** | DOCUMENTATION
+REQUIREMENTS | VISUAL | SPECIFICATIONS | **PLAN** | IMPLEMENTATION | DOCUMENTATION
 
 ## Phase Status
 
-APPROVED | APPROVED | APPROVED | APPROVED | **IN PROGRESS** | PENDING
+APPROVED | APPROVED | APPROVED | APPROVED | **NOT STARTED** | PENDING
 
 ## Last Updated
 
-2026-03-11 by Qwen
+2026-08-31 by Claude (corrected: 05-implementation-log.md shows every task
+still PENDING and no `voice_line_*` files exist anywhere in
+`libsFlutter/flutter_gsmsip/example` — this file previously claimed
+Phases 1-4 complete, which did not match reality. Also fixed stale
+`vdd-voiceline`/`vdd-dongles` cross-references left over from this flow's
+move out of `flows/_archive/vdd-voiceline/`, and renamed this header to
+match the current directory name.)
 
 ## Blockers
 
-- None - implementation starting
+- None — ready to start Phase 1 (Domain Layer) whenever implementation
+  begins.
+- Before starting: coordinate with `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-uiux`
+  — its "System Capabilities panel" and this flow's "Enhanced Mode" screen
+  both surface Magisk-derived capability flags; avoid designing/building
+  two overlapping screens independently.
 
 ## Progress
 
@@ -27,11 +38,11 @@ APPROVED | APPROVED | APPROVED | APPROVED | **IN PROGRESS** | PENDING
 - [x] Specifications approved
 - [x] Plan drafted
 - [x] Plan approved
-- [x] Implementation started
-- [x] Phase 1: Domain Layer complete
-- [x] Phase 2: Data Layer complete
-- [x] Phase 3: Presentation complete
-- [x] Phase 4: Integration complete
+- [ ] Implementation started
+- [ ] Phase 1: Domain Layer complete
+- [ ] Phase 2: Data Layer complete
+- [ ] Phase 3: Presentation complete
+- [ ] Phase 4: Integration complete
 - [ ] Documentation drafted
 - [ ] Documentation approved
 
@@ -51,7 +62,7 @@ Analyzed from SDD flows:
 | **TTY Port** | `/dev/tty*` or `/sys/class/tty/*` | No | High | Model-specific paths |
 | **Telecom API** | `android.telecom.*` | No | Medium | Standard Android API |
 | **Enhanced Mode** | System-level access | Yes | High | Privileged permissions, not mentioned in UI |
-| **Dongle** | USB-C / TRRS | No | High | External hardware (see vdd-dongles) |
+| **Dongle** | USB-C / TRRS | No | High | External hardware (see vdd-flutter_gsmsip-example-zatychka-uiux) |
 
 ### Key Constraints
 
@@ -68,7 +79,7 @@ Voice Line Access Layer
 ├── TTY Port (/dev/ttyUSB*, /dev/ttyHS*)
 ├── Telecom API (android.telecom.ConnectionService)
 ├── Enhanced Mode (system-level, hidden from UI)
-└── Dongle (external hardware, vdd-dongles)
+└── Dongle (external hardware, vdd-flutter_gsmsip-example-zatychka-uiux)
 ```
 
 ### Visual Design Decisions
@@ -81,7 +92,10 @@ Voice Line Access Layer
 
 ## Next Actions
 
-1. Create client-facing README.md documentation
-2. Document feature in simple, non-technical terms
-3. Add practical usage examples
-4. Get documentation approval
+1. Resolve the Enhanced-Mode / System-Capabilities-panel overlap with
+   `vdd-flutter_gsmsip-example-uiux` before writing code for either.
+2. Start Phase 1 (Domain Layer) per `04-plan.md` and log real progress in
+   `05-implementation-log.md` as tasks complete (not before).
+3. After implementation: create client-facing README.md, document the
+   feature in non-technical terms, add usage examples, get documentation
+   approval.

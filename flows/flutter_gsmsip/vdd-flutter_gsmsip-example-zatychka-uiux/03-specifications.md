@@ -324,7 +324,7 @@ ELSE:
 
 ### Requires
 
-- **vdd-voiceline** — Voice line access methods
+- **vdd-flutter_gsmsip-example-voiceline-uiux** — Voice line access methods
 - **PJSIP audio endpoint** — для test tone generation
 - **Android USB Host API** — для USB dongle detection
 - **Android AudioManager** — для TRRS detection
@@ -351,7 +351,7 @@ ELSE:
 
 | System | Integration Point |
 |--------|-------------------|
-| vdd-voiceline | VoiceLineMethod.dongle |
+| vdd-flutter_gsmsip-example-voiceline-uiux | VoiceLineMethod.dongle |
 | PJSIP | Test tone generation |
 | GatewayConfig | DongleConfig storage |
 | LineInfo | Dongle status |

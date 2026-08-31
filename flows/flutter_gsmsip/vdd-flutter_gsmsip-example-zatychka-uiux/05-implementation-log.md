@@ -239,7 +239,7 @@ enum DongleType {
 
 ## Phase 4: Integration
 
-### Task 4.1: vdd-voiceline Integration
+### Task 4.1: vdd-flutter_gsmsip-example-voiceline-uiux Integration
 
 **Status**: PENDING
 

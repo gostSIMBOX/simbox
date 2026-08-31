@@ -2,30 +2,31 @@
 
 ## Current Phase
 
-**REQUIREMENTS** | VISUAL | SPECIFICATIONS | PLAN | IMPLEMENTATION | DOCUMENTATION
+REQUIREMENTS | **VISUAL** | SPECIFICATIONS | PLAN | IMPLEMENTATION | DOCUMENTATION
 
 ## Phase Status
 
-**DRAFTING**
+APPROVED | **DRAFTING**
 
 ## Last Updated
 
-2026-08-31 by Claude (split library-code items out to new sibling flow
-`sdd-flutter_gsmsip-lib`, per Anton's explicit request)
+2026-08-31 by Claude (Anton approved 01-requirements.md — moving to VISUAL)
 
 ## Blockers
 
-- Awaiting Anton's "requirements approved" (or requested changes) before
-  moving to VISUAL.
-- AC2 (multi-profile config) and AC3 (Magisk-capability display) are now
+- AC2 (multi-profile config) and AC3 (Magisk-capability display) are still
   gated on `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` reaching
-  Specifications — don't build example-local workarounds for either
-  while that flow is still in REQUIREMENTS.
+  Specifications — mockups for those screens can proceed, but don't lock
+  their data model until that flow settles.
+- Before drafting the Capabilities/Enhanced-Mode surface, coordinate with
+  `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux` (its
+  "Enhanced Mode" screen covers similar ground) so the two flows don't
+  mock up two competing versions of the same screen.
 
 ## Progress
 
 - [x] Requirements drafted
-- [ ] Requirements approved
+- [x] Requirements approved
 - [ ] Visual drafted
 - [ ] Visual approved
 - [ ] Specifications drafted
@@ -101,9 +102,14 @@ Key decisions and context for resuming:
 
 ## Next Actions
 
-1. Get explicit "requirements approved" from Anton (or incorporate
-   requested changes to `01-requirements.md`).
-2. On approval, move to VISUAL: ASCII mockups for the new/evolved
-   screens (Gateway mode, multi-profile Setup, System Capabilities,
-   Default Dialer status card) plus the DS-restyled versions of the
-   existing 6 screens and the splash screen.
+1. Draft ASCII mockups in `02-visual.md` for the new/evolved screens:
+   Gateway mode, multi-profile Setup, System Capabilities, Default Dialer
+   status card — plus DS-restyled versions of the existing 6 screens and
+   the splash screen.
+2. Reuse `flows/flutter_gsmsip/vdd-dialer`'s approved "Bridge call
+   status: SIP leg + GSM leg" visual language for the Gateway screen
+   rather than inventing new vocabulary.
+3. Resolve the accent-colorway Open Question with `/nativemind-designsystem`
+   before finalizing mockups.
+4. Wait for explicit "visual approved" from Anton before moving to
+   SPECIFICATIONS.

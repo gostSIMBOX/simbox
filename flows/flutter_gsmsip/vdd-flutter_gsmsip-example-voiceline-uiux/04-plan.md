@@ -15,13 +15,13 @@
 1. Начать с domain layer (интерфейсы, модели)
 2. Реализовать data layer (источники данных, repository)
 3. Добавить presentation layer (providers, UI)
-4. Интегрировать с vdd-dongles и существующими компонентами
+4. Интегрировать с vdd-flutter_gsmsip-example-zatychka-uiux и существующими компонентами
 
 **Ключевые решения:**
 - Domain-driven design (repository pattern)
 - State management через ChangeNotifier
 - Platform channels для Android TTY/Enhanced
-- Интеграция с vdd-dongles через общий интерфейс
+- Интеграция с vdd-flutter_gsmsip-example-zatychka-uiux через общий интерфейс
 
 ---
 
@@ -93,13 +93,13 @@
 - **Verification**: Возвращает true/false для доступности
 - **Complexity**: Medium
 
-#### Task 2.3: DongleSource (интеграция с vdd-dongles)
+#### Task 2.3: DongleSource (интеграция с vdd-flutter_gsmsip-example-zatychka-uiux)
 
-- **Description**: Получение статуса dongle из vdd-dongles
+- **Description**: Получение статуса dongle из vdd-flutter_gsmsip-example-zatychka-uiux
 - **Files**:
   - `lib/data/sources/voice_line/dongle_source.dart` — Create
   - `lib/data/sources/dongles/dongle_detector.dart` — Create (shared)
-- **Dependencies**: Task 1.1, vdd-dongles status
+- **Dependencies**: Task 1.1, vdd-flutter_gsmsip-example-zatychka-uiux status
 - **Verification**: Возвращает DongleStatus из spec
 - **Complexity**: Medium
 
@@ -324,7 +324,7 @@ Phase 4: Integration
 |------|------------|--------|------------|
 | TTY paths device-specific | High | Medium | Device database, manual config option |
 | Enhanced Mode detection fails | Medium | High | Fallback to other methods |
-| Dongle integration conflicts | Medium | Medium | Clear interface contract with vdd-dongles |
+| Dongle integration conflicts | Medium | Medium | Clear interface contract with vdd-flutter_gsmsip-example-zatychka-uiux |
 | Platform channel errors | Medium | High | Error handling, graceful degradation |
 | Call routing integration complex | High | High | Incremental testing, rollback plan |
 

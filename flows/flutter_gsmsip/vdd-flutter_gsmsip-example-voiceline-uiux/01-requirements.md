@@ -94,14 +94,14 @@ This enables:
 - Works on any Android device
 - High quality (depends on dongle type)
 - Requires external hardware
-- Detailed in `vdd-dongles` flow
+- Detailed in `vdd-flutter_gsmsip-example-zatychka-uiux` flow
 
 **Interface Types**:
 - USB-C with DAC (digital)
 - USB-C Audio Accessory (analog)
 - TRRS 3.5mm (analog)
 
-**See**: `flows/vdd-dongles/02-visual.md` for dongle types and UI.
+**See**: `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-zatychka-uiux/02-visual.md` for dongle types and UI.
 
 ---
 
@@ -188,7 +188,7 @@ This enables:
 
 ### Dependencies
 
-- **Requires**: `vdd-dongles` - External dongle UI and detection
+- **Requires**: `vdd-flutter_gsmsip-example-zatychka-uiux` - External dongle UI and detection
 - **Requires**: PJSIP audio endpoint
 - **Requires**: Android TelephonyManager API
 
@@ -208,10 +208,11 @@ This enables:
 
 ### Related Documentation
 
-- `flows/vdd-dongles/` - External dongle UI and types
-- `flows/sdd-voiceline-mode-direct/` - Direct mode (acoustic coupling)
-- `flows/sdd-voiceline-mode-magisk/` - Magisk integration
-- `flows/sdd-voiceline-mode-magisk-v2/` - Magisk v2 permissions
+- `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-zatychka-uiux/` - External dongle UI and types
+- `flows/flutter_gsmsip/sdd-voiceline-mode-direct/` - Direct mode (acoustic coupling)
+- `flows/flutter_gsmsip/sdd-voiceline-mode-magisk/` - Magisk integration
+- `flows/flutter_gsmsip/sdd-voiceline-mode-magisk-v2/` - Magisk v2 permissions
+- `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-uiux/` - Sibling UI/UX flow for the same example app (Gateway/Setup/Capabilities screens); Enhanced Mode here and its "System Capabilities panel" both read Magisk-derived flags — coordinate before implementing to avoid duplicate screens
 
 ### Android APIs
 

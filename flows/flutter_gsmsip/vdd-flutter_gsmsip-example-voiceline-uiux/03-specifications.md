@@ -225,7 +225,7 @@ class TtyPortInfo {
 }
 ```
 
-### DongleStatus (интеграция с vdd-dongles)
+### DongleStatus (интеграция с vdd-flutter_gsmsip-example-zatychka-uiux)
 
 ```dart
 class DongleStatus {
@@ -300,7 +300,7 @@ class DongleStatus {
 
 ### Requires
 
-- **vdd-dongles** — Dongle detection и UI integration
+- **vdd-flutter_gsmsip-example-zatychka-uiux** — Dongle detection и UI integration
 - **PJSIP audio endpoint** — для test tone generation
 - **Android USB Host API** — для dongle detection
 - **Android Telecom API** — для telecom method
@@ -327,7 +327,7 @@ class DongleStatus {
 
 | System | Integration Point |
 |--------|-------------------|
-| vdd-dongles | DongleSource.getStatus() |
+| vdd-flutter_gsmsip-example-zatychka-uiux | DongleSource.getStatus() |
 | PJSIP | Test tone generation |
 | GatewayConfig | VoiceLineConfig storage |
 | LineInfo | canRecordVoiceToRadio и др. |
@@ -350,7 +350,7 @@ interface VoiceLinePlatform {
     fun checkEnhancedModeAvailable(): Boolean
     fun getEnhancedModeStatus(): EnhancedModeStatus
     
-    // Dongle (интеграция с vdd-dongles)
+    // Dongle (интеграция с vdd-flutter_gsmsip-example-zatychka-uiux)
     fun getDongleStatus(): DongleStatus
 }
 ```
@@ -405,7 +405,7 @@ val commonTtyPaths = listOf(
 ### Rollout
 
 1. **Phase 1**: Telecom API + Acoustic (baseline)
-2. **Phase 2**: Dongle integration (vdd-dongles)
+2. **Phase 2**: Dongle integration (vdd-flutter_gsmsip-example-zatychka-uiux)
 3. **Phase 3**: TTY Port support (device database)
 4. **Phase 4**: Enhanced Mode (Magisk, скрыто)
 

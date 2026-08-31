@@ -1,20 +1,31 @@
-# Status: vdd-dongles
+# Status: vdd-flutter_gsmsip-example-zatychka-uiux
 
 ## Current Phase
 
-REQUIREMENTS | VISUAL | SPECIFICATIONS | PLAN | **IMPLEMENTATION** | DOCUMENTATION
+REQUIREMENTS | VISUAL | SPECIFICATIONS | **PLAN** | IMPLEMENTATION | DOCUMENTATION
 
 ## Phase Status
 
-APPROVED | APPROVED | APPROVED | APPROVED | **IN PROGRESS** | PENDING
+APPROVED | APPROVED | APPROVED | APPROVED | **NOT STARTED** | PENDING
 
 ## Last Updated
 
-2026-03-11 by Qwen
+2026-08-31 by Claude (corrected: 05-implementation-log.md shows every task
+still PENDING and no `dongle_*` files exist anywhere in
+`libsFlutter/flutter_gsmsip/example` — this file previously claimed
+Phases 1-4 complete, which did not match reality. Also fixed stale
+`vdd-dongles`/`vdd-voiceline` cross-references left over from this flow's
+move out of `flows/_archive/vdd-dongles/`, and renamed this header to
+match the current directory name. Note: this flow has no `01-requirements.md`
+of its own by design — requirements were sourced directly from
+`flows/adapter/sdd-dongle-*`.)
 
 ## Blockers
 
-- None - implementation starting
+- None — ready to start Phase 1 (Domain Layer) whenever implementation
+  begins. Task 4.1 (Integrate with
+  `vdd-flutter_gsmsip-example-voiceline-uiux`) depends on that sibling
+  flow's own Phase 2 (DongleSource) being underway.
 
 ## Progress
 
@@ -26,11 +37,11 @@ APPROVED | APPROVED | APPROVED | APPROVED | **IN PROGRESS** | PENDING
 - [x] Specifications approved
 - [x] Plan drafted
 - [x] Plan approved
-- [x] Implementation started
-- [x] Phase 1: Domain Layer complete
-- [x] Phase 2: Data Layer complete
-- [x] Phase 3: Presentation complete
-- [x] Phase 4: Integration complete
+- [ ] Implementation started
+- [ ] Phase 1: Domain Layer complete
+- [ ] Phase 2: Data Layer complete
+- [ ] Phase 3: Presentation complete
+- [ ] Phase 4: Integration complete
 - [ ] Documentation drafted
 - [ ] Documentation approved
 
@@ -60,7 +71,8 @@ Key decisions and context for resuming:
 
 ## Next Actions
 
-1. Create client-facing README.md documentation
-2. Document feature in simple, non-technical terms
-3. Add practical usage examples
-4. Get documentation approval
+1. Start Phase 1 (Domain Layer) per `04-plan.md` and log real progress in
+   `05-implementation-log.md` as tasks complete (not before).
+2. After implementation: create client-facing README.md, document the
+   feature in non-technical terms, add usage examples, get documentation
+   approval.

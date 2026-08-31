@@ -15,7 +15,7 @@
 1. Начать с domain layer (модели, интерфейсы)
 2. Реализовать data layer (detection sources, repository)
 3. Добавить presentation layer (providers, UI screens)
-4. Интегрировать с vdd-voiceline и audio path
+4. Интегрировать с vdd-flutter_gsmsip-example-voiceline-uiux и audio path
 
 **Ключевые решения:**
 - Domain-driven design (repository pattern)
@@ -228,12 +228,12 @@
 
 ### Phase 4: Integration & Polish
 
-#### Task 4.1: Integrate with vdd-voiceline
+#### Task 4.1: Integrate with vdd-flutter_gsmsip-example-voiceline-uiux
 
 - **Description**: Интеграция с VoiceLineMethod.dongle
 - **Files**:
   - `lib/data/sources/voice_line/dongle_source.dart` — Modify (integrate)
-- **Dependencies**: Task 2.5, vdd-voiceline
+- **Dependencies**: Task 2.5, vdd-flutter_gsmsip-example-voiceline-uiux
 - **Verification**: Dongle appears in voice line methods
 - **Complexity**: Medium
 
@@ -316,9 +316,10 @@ Phase 3: Presentation Layer
                 ▼
 Phase 4: Integration
 ┌────────────────────────────────────────┐
-│  4.1 vdd-voiceline  4.2 Dashboard     │
+│  4.1 voiceline-uiux 4.2 Dashboard     │
 │  4.3 Call Routing   4.4 Errors  4.5 Help
 └────────────────────────────────────────┘
+(4.1 = flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux)
 ```
 
 ---

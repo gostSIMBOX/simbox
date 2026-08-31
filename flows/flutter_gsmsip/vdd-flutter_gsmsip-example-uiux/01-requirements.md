@@ -1,7 +1,7 @@
 # Requirements: flutter_gsmsip-example-uiux
 
 > Version: 1.0
-> Status: DRAFT
+> Status: APPROVED
 > Last Updated: 2026-08-31
 
 ## Problem Statement
@@ -61,7 +61,7 @@ reimplemented inline:
 |---|---|---|
 | Replacing the system dialer (`ACTION_CHANGE_DEFAULT_DIALER`, `InCallService`, `ConnectionService`) | **`flows/flutter_replace_dialer/`** (tracks the **`flutter_dialer`** package — the old `tdd-replace-dialer` doc there is legacy React-Native content describing `react-native-replace-dialer`'s `ReplaceDialerModule.java`/`RC_DEFAULT_PHONE`; it needs a Flutter-era pass, which is this flow's cue to open that work, not a reason to duplicate default-dialer UI here). **New finding**: this duplication already exists in code, not just in docs — `flutter_gsm/android/.../ReplaceDialerModule.kt` implements `isDefaultDialer`/`setDefaultDialer`/`canSetDefaultDialer` over its own channel (`flutter_gsm/replace_dialer`), completely separately from `flutter_dialer`'s plugin. `flutter_replace_dialer` needs to resolve which package owns this (recommend: consolidate into `flutter_dialer`, delete the duplicate from `flutter_gsm`) — not something to decide inside this UI/UX flow. | Example surfaces a **"Default Dialer" status card** reading whichever module `flutter_replace_dialer` designates as canonical, and links out to Setup instructions; no new dialer-replacement logic is written inside `flutter_gsmsip` |
 | Magisk-granted privileged capabilities (`CAPTURE_AUDIO_OUTPUT`, disabling Qualcomm audio-concurrency locks, priv-app permission grants) | **`flows/flutter_gsmsip/sdd-voiceline-mode-magisk`** + **`sdd-voiceline-mode-magisk-v2`** (already DRAFT/REVIEW, own the actual Magisk module spec) | Example surfaces a **"System Capabilities" panel** (magisk installed? which privileged perms are actually granted right now, via `PermissionController`/`dumpsys` semantics already documented in `-v2`) that reads capability flags — it does not design a new Magisk module. **Dependency to flag, not silently assume**: a Magisk module is scoped to one installed app's `applicationId` (see Permission Audit below), so demonstrating a *real* granted capability in this example requires `sdd-voiceline-mode-magisk-v2` to ship a variant targeting `org.telon.flutter_gsmsip_example` (its current applicationId) rather than the spec's existing `one.telefon.gateway` target. |
-| Voice-line hardware adapters (TRRS/USB differential signaling) | `sdd-pjsip-mode-inversion`, `sdd-voiceline-mode-direct`, `vdd-zatychka-uixu` | Not touched by this flow — those already have their own UI (`vdd-zatychka-uixu`) |
+| Voice-line access methods (TTY/Telecom/Enhanced-Mode/Dongle selection) and hardware adapters (TRRS/USB differential signaling) | `sdd-pjsip-mode-inversion`, `sdd-voiceline-mode-direct`, `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux` (umbrella UI flow), `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-zatychka-uiux` (dongle-specific UI, referenced by voiceline-uiux) | Not touched by this flow — those already have their own approved UI (both at PLAN phase). **Overlap to resolve, not silently duplicate**: voiceline-uiux's "Enhanced Mode" screen and this flow's "System Capabilities panel" (AC3 below) both surface Magisk-derived capability flags — coordinate before implementing either. |
 | `flutter_gsmsip` library API gaps: public config save/clear, multi-profile storage, whether a Magisk-capability model belongs in the library, and documenting the permission contract the library can't enforce itself | **`flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/`** (new — split out of this flow's own drafting once these turned out to be library-code items, not UI/UX) | This flow's Setup/Capabilities screens are written *against* whatever public API that flow decides on — no example-local workarounds re-invented once it ships (see AC2/AC3 below, both now depend on it) |
 
 **Confirmed already implemented, not a gap** (found while drafting the
@@ -330,12 +330,14 @@ two.
 - `flows/flutter_replace_dialer/tdd-replace-dialer/` — legacy RN dialer-replacement tests, needs a Flutter-era successor for `flutter_dialer`
 - `flows/flutter_gsmsip/sdd-flutter_gsmsip-example/` — prior flow that made the example genuinely functional (this flow builds on top, doesn't redo it)
 - `flows/flutter_gsmsip/vdd-dialer/` — approved bridge/route visual language to reuse
+- `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-voiceline-uiux/` — sibling UI/UX flow for the same example app, umbrella for TTY/Telecom/Enhanced-Mode/Dongle voice-line access; its "Enhanced Mode" screen overlaps this flow's System Capabilities panel (AC3) — coordinate before building either
+- `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-zatychka-uiux/` — sibling UI/UX flow for dongle configuration, a dependency of voiceline-uiux
 - `~/.claude/skills/nativemind-designsystem/`, `~/.claude/skills/nativemind-flutter-splash/`
 
 ---
 
 ## Approval
 
-- [ ] Reviewed by: Anton
-- [ ] Approved on:
+- [x] Reviewed by: Anton
+- [x] Approved on: 2026-08-31
 - [ ] Notes:
