@@ -6,16 +6,62 @@ REQUIREMENTS | VISUAL | SPECIFICATIONS | PLAN | **IMPLEMENTATION** | DOCUMENTATI
 
 ## Phase Status
 
-IN PROGRESS (Plan approved 2026-08-31; starting Phase 1)
+NEARLY COMPLETE — all 17 plan tasks done except Task 4.3 (manual
+device verification), which needs Anton and a physical Android device.
 
 ## Last Updated
 
-2026-08-31 by Claude (Plan approved as drafted, no changes; beginning
-Implementation task-by-task per 04-plan.md's order)
+2026-08-31 by Claude (Phases 1–4 implemented and verified by every
+automated means available. Package renamed mid-session from
+`flutter_dialer` to `flutter_dialer_replacement` (Anton, matching the
+directory name) — reconciled across every actual dependent in this
+flow's build path (`flutter_tele`, this package's own tests/example/
+README). Applied the `nativemind-designsystem` skill's tokens to the
+Status & Setup screen and app-wide `ThemeData`; other 4 screens not yet
+converted. All verification re-run green afterward: `flutter analyze`
+clean, `flutter test` passing, 7/7 native unit tests, `flutter build
+apk --debug` succeeding. Only Task 4.3 — real-device manual
+verification — remains, blocked on hardware not present here.)
 
 ## Blockers
 
-- None currently blocking Implementation start.
+- **Boundary clarified**: `flutter_tele` is a separate, unrelated
+  library — this flow depends on it (example app only) but must never
+  edit its files or fold its functionality into
+  `flutter_dialer_replacement`. Reverted an earlier overreach where
+  this flow edited `flutter_tele`'s own `pubspec.yaml`/`dialer.dart` to
+  follow the rename; Anton fixed those files himself instead. Task
+  1.3's decision (no InCallService inside `flutter_dialer_replacement`,
+  `flutter_tele` used externally for call-state) was confirmed correct,
+  not reverted.
+- **Task 4.3 (Manual device verification) needs Anton.** `adb devices`
+  returns empty in this environment — no physical device or emulator to
+  run `03-specifications.md`'s checklist (accept/decline the real
+  system dialog, cold/warm `tel:` intent launch, real call-log match,
+  single-`InCallService` manifest check).
+- **Design-system pass is partial**: only `main.dart`'s `ThemeData` and
+  `status_screen.dart` use the NativeMind DS tokens
+  (`example/lib/design/`). Dial Pad, Incoming Call, Active Call, and
+  Call Log screens still use plain Material defaults — not yet
+  converted. Not a functional blocker, but incomplete if Anton expects
+  full visual consistency across all 5 screens.
+- Documentation phase (optional, client-facing README) not started —
+  `README.md` still describes the old always-`true` `setDefaultDialer()`
+  and doesn't mention `getCallLog()`/`initialNumber()`/`numberStream`
+  (its two usage-example imports were fixed for the rename, but the
+  content itself wasn't updated for the new APIs).
+- Discovered mid-implementation: `flutter_gsm/pubspec.yaml`'s
+  `dependency_overrides` has a stale path (`path: ../flutter_dialer`) —
+  the actual directory is `flutter_dialer_replacement` (renamed at some
+  point). Out of this flow's scope to fix (it's `flutter_gsm`'s file);
+  flagged here for whoever opens that package's own flow, alongside the
+  already-flagged `ReplaceDialerModule.kt` duplicate-deletion item.
+- Discovered mid-implementation: `flutter_dialer_replacement/flows/
+  tdd-incall-service/` is a pre-existing TDD flow planning work on the
+  now-deleted `TeleService.kt` — superseded by this flow's decision
+  (AC2) to delegate call-state to `flutter_tele` instead. Kept for
+  historical reference, not deleted, same policy as this flow's other
+  superseded docs.
 - One non-blocking open item carried forward (does not block this flow):
   whether `flutter_gsmsip`'s GSM auto-answer path actually requires
   default-dialer status — affects `flutter_gsmsip`'s own flow, not this
@@ -39,13 +85,8 @@ Implementation task-by-task per 04-plan.md's order)
 - [x] Plan drafted
 - [x] Plan approved (2026-08-31)
 - [x] Implementation started
-- [ ] Specifications drafted
-- [ ] Specifications approved
-- [ ] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
-- [ ] Documentation drafted
+- [x] Implementation complete (except Task 4.3, needs Anton + device)
+- [ ] Documentation drafted (optional phase, not started)
 - [ ] Documentation approved
 
 ## Context Notes
@@ -126,13 +167,26 @@ N/A — new flow, not a fork.
 
 ## Next Actions
 
-1. Get "plan approved" from Anton on `04-plan.md` (4 phases, 15 tasks,
-   dependency graph, risk assessment). Highest-risk item flagged there:
-   Task 3.4 (Incoming/Active Call screens) is High complexity because
-   `flutter_tele`'s SIP-flavored `TeleCall` shape (e.g. `remoteUri`
-   parsing) may not map cleanly onto the approved mockups — budget
-   adaptation time, not a blocker to starting.
-2. On approval, begin Implementation phase task-by-task in the plan's
-   order (Phase 1 -> 2 -> 3 -> 4), logging progress in
-   `05-implementation-log.md` after each task per this flow's own
-   conventions.
+1. **Anton runs Task 4.3** (manual device verification) per
+   `03-specifications.md`'s checklist — this is the only remaining item
+   before Implementation can be marked fully COMPLETE. Needs a physical
+   Android device or emulator, which this environment doesn't have.
+2. Anton reviews the two deliberate deviations flagged in
+   `05-implementation-log.md`: the `canSetDefaultDialer()` semantics
+   change's effect on the Status & Setup button visibility
+   (`if (canSet)` → `if (!isDefault)`), and the DTMF keypad being
+   UI-only (no send-tone API exists in `flutter_tele` yet).
+3. If Anton wants full visual consistency, extend the design-system
+   pass (`example/lib/design/`) to the remaining 4 screens (Dial Pad,
+   Incoming Call, Active Call, Call Log) — currently only `main.dart`'s
+   theme and `status_screen.dart` use it.
+4. Decide whether to proceed to the optional Documentation phase
+   (client-facing README — the current one still describes the old
+   always-`true` `setDefaultDialer()` and doesn't mention the 3 new
+   APIs), or close this flow as done once 4.3 passes.
+5. Separately, decide whether/when to act on the two cross-package
+   follow-ups this flow surfaced but didn't fix (out of scope here):
+   `flutter_gsm`'s stale `dependency_overrides` path, and its
+   `ReplaceDialerModule.kt` duplicate — both packages also still
+   reference the pre-rename `flutter_dialer` name in their own
+   pubspec.yaml/pubspec.lock, unrelated to this flow's build.

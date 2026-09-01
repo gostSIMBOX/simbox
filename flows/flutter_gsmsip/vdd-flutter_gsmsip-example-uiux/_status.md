@@ -2,38 +2,83 @@
 
 ## Current Phase
 
-REQUIREMENTS | VISUAL | SPECIFICATIONS | **PLAN** | IMPLEMENTATION | DOCUMENTATION
+REQUIREMENTS | VISUAL | SPECIFICATIONS | PLAN | **IMPLEMENTATION** | DOCUMENTATION
 
 ## Phase Status
 
-APPROVED | APPROVED | APPROVED | **DRAFTING**
+APPROVED | APPROVED | APPROVED | APPROVED | **IN PROGRESS**
 
 ## Last Updated
 
-2026-08-31 by Claude (Anton approved 03-specifications.md. Drafted
-04-plan.md: 7 phases covering AC1/AC4-AC8 only — Default Dialer data
-layer, DS restyle, Gateway screen rework, Default Dialer UI, permission
-manifest comments, splash invocation, verification. Real file paths
-throughout, e.g. confirmed exact rename target `dashboard_screen.dart` →
-`gateway_screen.dart` and its `main.dart` wiring by reading the actual
-`RootShell`/`_tabs` structure. AC2/AC3 explicitly excluded from this
-plan pending `sdd-flutter_gsmsip-lib`.)
+2026-08-31 by Claude — **Implementation pass complete for AC1/AC4-AC8**
+(all 7 plan phases executed; see `05-implementation-log.md` for full
+per-task detail). Summary:
+- Phase 1: `DefaultDialerStatusSource`, `DialerWarningLevel`/`DialerWarningState`.
+- Phase 2: DS Green/Simple restyle across `app_colors.dart`/`app_gradients.dart`/
+  `app_widgets.dart` — collapsed ~29 gradients down to the one DS-sanctioned
+  accent gradient.
+- Phase 3: `DashboardScreen` → `GatewayScreen`, Active Routings list
+  (`RoutingListState`), Idle/Loading/Disarmed states.
+- Phase 4: persistent Default Dialer card + one-time arm alert, wired
+  into both `GatewayScreen` and `SettingsScreen`.
+- Phase 5.1: manifest permission-ownership comments (no permissions
+  removed). Task 5.2 delegated, tracked separately.
+- Phase 6: Android-only native splash via `/nativemind-flutter-splash`,
+  including a placeholder-logo dark-mode-contrast fix discovered during
+  verification.
+- Phase 7.1 **blocked** (see below); 7.2 done (updated voiceline-uiux's
+  status).
+
+**Update (same day, Anton's follow-up)**: the `flutter_dialer` gap above
+is **fixed**. Anton pointed at `libsFlutter/flutter_dialer_replacement`
+directly — its own git log (`ec40f97 Rename package to
+flutter_dialer_replacement...`) confirms it *is* the missing
+`flutter_dialer`, renamed upstream with a fully working implementation
+(not a stub), but the rename was never propagated to consumers. Fixed
+every stale reference across the graph (package name in
+`dependencies`/`dependency_overrides` + 2 import statements, class name
+`FlutterDialer` and file path `flutter_dialer.dart` unchanged since
+those didn't change upstream) in: `flutter_gsm/pubspec.yaml` (+ its
+`android_flutter_gsm.dart` import), `flutter_gsm/example/pubspec.yaml`,
+`flutter_tele/pubspec.yaml` (+ its `dialer.dart` import),
+`flutter_tele/example/pubspec.yaml`, `flutter_gsmsip/pubspec.yaml`,
+`flutter_gsmsip/example/pubspec.yaml`. Verified: `flutter pub get`
+resolves cleanly (previously failed before reaching Gradle at all),
+`flutter analyze`/`flutter test` unchanged at their existing clean
+baseline. **This fix touched files outside this flow's own scope**
+(`flutter_gsm`, `flutter_tele` — two other packages) — done with Anton's
+explicit approval, not unilaterally.
+
+**New discovery from attempting the fix**: fixing `flutter_dialer` was
+necessary but not sufficient. `flutter build apk --debug` now gets past
+the Dart-compile stage entirely (proves the fix worked) but fails at a
+**separate, deeper, unrelated** stage: `flutter_nmsip`'s Android native
+code (`ArgumentUtils.java`, `PjActions.java`) references React Native
+bridge types (`WritableMap`/`WritableNativeMap`/etc.) and
+`Gson`/`JsonElement`, none declared in `flutter_nmsip/android/build.gradle`
+— 97 Java compile errors. The referenced DTO source files
+(`CallSettingsDTO.java`, `SipMessageDTO.java`) exist, so this is a
+missing-dependency/design problem, not a missing-file one — likely
+leftover from this project's `react-native-*` lineage, never adapted for
+a pure Flutter plugin. **Not fixed** — different package, different kind
+of problem (native dependency/design decision), outside anything
+authorized in this session. Task 7.1 stays blocked, now for this reason.
 
 ## Blockers
 
-- Awaiting Anton's "plan approved" (or requested changes) on
-  `04-plan.md`.
-- Task 5.2 in the plan is an open checkpoint needing Anton's explicit
-  yes/no on removing `RECEIVE_MMS`/`RECEIVE_WAP_PUSH` from the example
-  manifest — not blocking plan approval itself, but blocking that one
-  task during Implementation.
+- **None for this flow's own scope** — AC1/AC4-AC8 implementation is
+  done and self-verified (`flutter analyze`/`flutter test`/`aapt2`) to
+  the extent possible without a runnable APK.
+- Task 7.1 (manual walkthrough) stays blocked — `flutter_dialer` is
+  fixed, but `flutter_nmsip`'s Android native build gap (see above) is a
+  new, separate blocker, out of this flow's scope to fix.
 - AC2 (multi-profile config) and AC3 (Magisk-capability display) remain
   gated on `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` (still in
-  REQUIREMENTS as of this update) — no plan exists for them yet, by
-  design.
+  REQUIREMENTS) — genuinely unbuilt, need their own Specifications+Plan
+  pass once that flow settles.
 - Capabilities screen overlap with `vdd-flutter_gsmsip-example-voiceline-uiux`'s
-  "Enhanced Mode" screen is flagged but not yet resolved — irrelevant to
-  this plan (AC3 isn't in it), relevant again once AC3 gets its own plan.
+  "Enhanced Mode" screen remains unresolved but non-urgent — AC3 isn't
+  built yet on either side.
 
 ## Progress
 
@@ -44,9 +89,10 @@ plan pending `sdd-flutter_gsmsip-lib`.)
 - [x] Specifications drafted
 - [x] Specifications approved
 - [x] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
+- [x] Plan approved
+- [x] Implementation started
+- [x] Implementation complete (for AC1/AC4-AC8 — AC2/AC3 excluded by
+      design, Task 7.1 blocked on an external gap, Task 5.2 delegated)
 - [ ] Documentation drafted
 - [ ] Documentation approved
 
@@ -114,14 +160,18 @@ Key decisions and context for resuming:
 
 ## Next Actions
 
-1. Get explicit "specs approved" from Anton on `03-specifications.md`,
-   or incorporate requested changes.
-2. Resolve the Capabilities/Enhanced-Mode overlap with
-   `vdd-flutter_gsmsip-example-voiceline-uiux` before AC3's screen is
-   built out (does not block approving the rest of this document).
-3. Watch `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` — once it reaches
-   Specifications, come back and replace this document's Deferred
-   `GatewayProfileSketch`/`CapabilityFlagSketch` placeholders with real
-   types before Plan locks AC2/AC3.
-4. On approval, move to PLAN: task breakdown for AC1/AC4-AC8 (AC2/AC3
-   plan separately once unblocked).
+1. `flutter_nmsip`'s Android native build gap (missing Gson/RN-bridge
+   dependencies in its `build.gradle`) needs its own investigation —
+   likely its own flow, not a quick fix inside this one.
+2. Once a runnable APK is possible, complete Task 7.1 (real-device manual
+   walkthrough per `03-specifications.md`'s checklist) and update this
+   status accordingly.
+3. Watch `flows/flutter_smsussd/sdd-flutter_smsussd-receive-mms-receive-wap-push/`
+   for its outcome (independent of this flow's own completion).
+4. Watch `flows/flutter_gsmsip/sdd-flutter_gsmsip-lib/` — once it reaches
+   Specifications, open a follow-up Specifications+Plan pass here for
+   AC2/AC3 (this flow's own docs already sketch the shape in
+   `03-specifications.md`'s Deferred section).
+5. When ready, move to DOCUMENTATION phase (client-facing README section
+   per 01-requirements.md's Should-Have) — needs Anton's go-ahead first,
+   per this skill's phase-transition rule.

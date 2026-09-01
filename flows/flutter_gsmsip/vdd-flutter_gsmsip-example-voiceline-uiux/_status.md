@@ -16,16 +16,28 @@ still PENDING and no `voice_line_*` files exist anywhere in
 Phases 1-4 complete, which did not match reality. Also fixed stale
 `vdd-voiceline`/`vdd-dongles` cross-references left over from this flow's
 move out of `flows/_archive/vdd-voiceline/`, and renamed this header to
-match the current directory name.)
+match the current directory name. **Update**: the overlap noted below is
+no longer purely theoretical — `vdd-flutter_gsmsip-example-uiux` has now
+implemented its side (Gateway screen, Default Dialer UI, DS restyle,
+splash) and its "System Capabilities panel" (AC3) remains explicitly
+Deferred/unbuilt pending `sdd-flutter_gsmsip-lib`, so no real code
+collision exists yet — but this flow's own Phase 1 should check that
+flow's `03-specifications.md` Deferred section before designing "Enhanced
+Mode" screen internals, not just its `02-visual.md` mockup.)
 
 ## Blockers
 
 - None — ready to start Phase 1 (Domain Layer) whenever implementation
   begins.
 - Before starting: coordinate with `flows/flutter_gsmsip/vdd-flutter_gsmsip-example-uiux`
-  — its "System Capabilities panel" and this flow's "Enhanced Mode" screen
-  both surface Magisk-derived capability flags; avoid designing/building
-  two overlapping screens independently.
+  — its "System Capabilities panel" (still unbuilt, Deferred pending
+  `sdd-flutter_gsmsip-lib`) and this flow's "Enhanced Mode" screen both
+  surface Magisk-derived capability flags; avoid designing/building two
+  overlapping screens independently. Since that flow's Gateway/Default
+  Dialer/DS-restyle work is now implemented, its `example/lib/theme/`
+  tokens (Green/Simple DS colors) are already live in this codebase —
+  this flow's own screens should adopt the same tokens rather than
+  reintroducing the old bespoke palette.
 
 ## Progress
 

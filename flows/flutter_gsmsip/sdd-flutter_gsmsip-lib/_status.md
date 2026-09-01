@@ -10,10 +10,22 @@ DRAFTING
 
 ## Last Updated
 
-2026-08-31 by Claude
+2026-08-31 by Claude (added AC0: live-verified broken dependency graph —
+`flutter pub get` fails today in `flutter_gsmsip` because
+`libsFlutter/flutter_dialer` was renamed to `flutter_dialer_replacement`
+mid-session by the sibling `vdd-flutter_dialer_replacement` flow, and
+three consumers' pubspecs still reference the old name)
 
 ## Blockers
 
+- **New, urgent, external**: `flutter_gsm`'s and `flutter_tele`'s own
+  `pubspec.yaml` files still reference the pre-rename `flutter_dialer`
+  package (path + pub.dev version respectively) — both need fixing
+  before this flow can run `pub get`/`analyze`/`test` cleanly, even
+  after fixing this package's own `dependency_overrides` (AC0). Not this
+  flow's files to fix; flagged for whoever picks up `flutter_gsm`'s own
+  overdue flow (already noted in `vdd-flutter_dialer_replacement`'s
+  status as a cross-package follow-up).
 - Awaiting Anton's "requirements approved" (or requested changes).
 - Two Open Questions in `01-requirements.md` need Anton's call before
   Specifications can commit to a design: (1) does multi-profile config
@@ -34,6 +46,36 @@ DRAFTING
 ## Context Notes
 
 Key decisions and context for resuming:
+
+- **`flutter_*` dependency graph + maturity, measured 2026-08-31** (Dart
+  LOC / native Android LOC / test files, `find`+`wc -l`, not estimated):
+
+  | Package | Depends on (path) | Dart LOC (files) | Native Android LOC (files) | Tests | Other platforms | Notes |
+  |---|---|---|---|---|---|---|
+  | `flutter_gsmsip` | `flutter_gsm`, `flutter_nmsip`, (+`flutter_dialer_replacement` via broken override) | 13,854 (73) | 0 (0) | 1 | none | Pure-Dart orchestrator, largest Dart surface in the family, zero native code by design |
+  | `flutter_gsm` | `flutter_dialer_replacement`(broken), `flutter_tele`, `flutter_smsussd` | 4,123 (24) | 872 (8) | 10 | none | Real modem/telephony driver + FFI to `libsimbox`; most heavily depended-on package |
+  | `flutter_nmsip` | none | 771 (5) | 1,174 (10) | 1 | none | Small Dart surface, PJSIP-heavy native layer (SIP/RTP) |
+  | `flutter_tele` | `flutter_dialer_replacement` (broken, via pub.dev version ref) | 652 (6) | 1,038 (3) | 2 | none | `TeleService.kt` alone is 520 of the 1,038 native lines — real `InCallService` |
+  | `flutter_smsussd` | none | 255 (4) | 265 (1) | 2 | ios, linux (unverified how real) | Smallest real package; SMS-only, no MMS/WAP-push backing despite the example manifest claiming it |
+  | `flutter_dialer_replacement` | none | 175 (3) | 310 (2) | 2 | none | Just rebuilt end-to-end by `vdd-flutter_dialer_replacement` — smallest but most recently verified (`flutter analyze` clean, tests pass, apk builds) |
+
+  **Dependency direction**: `flutter_gsmsip` → `flutter_gsm` +
+  `flutter_nmsip`; `flutter_gsm` → `flutter_dialer_replacement` +
+  `flutter_tele` + `flutter_smsussd`; `flutter_tele` →
+  `flutter_dialer_replacement`. `flutter_nmsip` and
+  `flutter_dialer_replacement` are the only leaves (no `flutter_*`
+  deps of their own).
+  **Maturity reading**: `flutter_gsm` is the load-bearing package (most
+  dependents, most native code, most tests) but its own manifest is
+  still empty (see `vdd-flutter_gsmsip-example-uiux`'s permission
+  audit) and its pubspec is currently broken (see AC0 above).
+  `flutter_gsmsip` is Dart-only and largest by LOC but has essentially
+  no test coverage (1 file) for 13.8k lines — worth flagging as risk
+  once this flow starts adding new public API surface (AC1–3).
+  `flutter_dialer_replacement` is the freshest/most-verified despite
+  being smallest. `flutter_nmsip` is a black box from this audit's
+  vantage point (small Dart, big native, 1 test) — not investigated
+  deeper here, out of this flow's scope.
 
 - **Origin**: split out of `flows/flutter_gsmsip/vdd-flutter_gsmsip-
   example-uiux` at Anton's explicit request — that flow is UI/UX-only

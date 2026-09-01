@@ -11,7 +11,12 @@ Covers AC1, AC4–AC8 only — everything `03-specifications.md` locked.
 AC2 (multi-profile Setup) and AC3 (System Capabilities) are **not**
 planned here; they get their own plan once `sdd-flutter_gsmsip-lib`
 reaches Specifications and the Deferred sketch types are replaced with
-real ones (see that document's Deferred section).
+real ones (see that document's Deferred section). The
+`RECEIVE_MMS`/`RECEIVE_WAP_PUSH` question (originally Task 5.2) is also
+delegated out, to
+`flows/flutter_smsussd/sdd-flutter_smsussd-receive-mms-receive-wap-push/`
+— it's a `flutter_smsussd` correctness question, not a decision for this
+UI/UX flow.
 
 Order: data-layer pieces with no UI dependency first (Default Dialer
 source, DS tokens), then the screen that consumes them (Gateway), then
@@ -242,19 +247,19 @@ final tokens/widgets, not touched twice.
   comments only, zero `<uses-permission>` lines touched.
 - **Complexity**: Low
 
-#### Task 5.2: Confirm RECEIVE_MMS/RECEIVE_WAP_PUSH removal with Anton
+#### Task 5.2: RECEIVE_MMS/RECEIVE_WAP_PUSH — delegated out
 
 - **Description**: 03-specifications.md flagged these two as unbacked
-  cruft but explicitly deferred removal pending Anton's confirmation —
-  this task is that confirmation checkpoint, not a code change by
-  default.
-- **Files**: None (decision checkpoint)
+  cruft. Rather than a checkpoint inside this plan, this is now its own
+  flow — `flows/flutter_smsussd/sdd-flutter_smsussd-receive-mms-receive-wap-push/`
+  — since it's a `flutter_smsussd`-scoped correctness question, not a
+  UI/UX decision for this flow. This task's manifest edit (if the other
+  flow concludes "delete") is picked up from there, not decided here.
+- **Files**: None in this plan — see the delegated flow
 - **Dependencies**: Task 5.1
-- **Verification**: Anton's explicit yes/no recorded in this plan's
-  Approval section or a follow-up note; if yes, becomes a one-line manifest
-  diff, otherwise closed as "keep, revisit if MMS ever becomes a real
-  feature."
-- **Complexity**: Low
+- **Verification**: N/A here — tracked in the delegated flow's own
+  Approval section
+- **Complexity**: N/A
 
 ---
 
@@ -356,7 +361,7 @@ Phase 3.2/3.3 needs 3.1's rename done first; Phase 6 only needs Phase
 | Gradient collapse (Task 2.2) picked the wrong widget as "the one kept CTA" | Low | Low | Purely cosmetic if wrong — swap which button keeps the gradient is a one-line change, not a rearchitecture |
 | Lifecycle-observer for Default Dialer re-check (Task 4.1) leaks or double-registers | Medium | Medium | Standard `WidgetsBindingObserver` dispose pattern, same as any other lifecycle-aware widget in Flutter — no novel risk, just needs the usual dispose discipline |
 | Arm-time alert (Task 4.2) re-fires more than once per session due to a state-management bug | Medium | Low (annoying, not breaking) | Explicit unit test on the trigger condition (Task 4.2's Verification) before manual testing |
-| `RECEIVE_MMS`/`RECEIVE_WAP_PUSH` removal (Task 5.2) breaks an undiscovered feature | Low | Medium | Gated behind Anton's explicit confirmation — not removed by default |
+| `RECEIVE_MMS`/`RECEIVE_WAP_PUSH` removal breaks an undiscovered feature | Low | Medium | Delegated entirely to `sdd-flutter_smsussd-receive-mms-receive-wap-push` — not decided or removed by this plan |
 
 ## Rollback Strategy
 
@@ -401,7 +406,9 @@ After each phase, verify:
       iconography note) — not scheduled as its own task above; decide at
       Task 3.1 whether the tab-icon change needs a vendored glyph or a
       stock Material icon suffices for this iteration.
-- [ ] Task 5.2's Anton confirmation — open until answered.
+- [ ] Task 5.2's outcome now lives in
+      `flows/flutter_smsussd/sdd-flutter_smsussd-receive-mms-receive-wap-push/`
+      — not this plan's open question anymore, just a dependency to watch.
 
 ---
 

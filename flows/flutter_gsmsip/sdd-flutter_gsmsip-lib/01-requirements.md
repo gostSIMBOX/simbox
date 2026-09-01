@@ -1,8 +1,62 @@
 # Requirements: flutter_gsmsip-lib
 
-> Version: 1.0
+> Version: 1.1
 > Status: DRAFT
 > Last Updated: 2026-08-31
+
+## Urgent: the dependency graph is currently broken (verified live)
+
+Before any of this flow's original 4 items matter, `flutter_gsmsip`
+**cannot resolve its own dependencies right now**. Verified by actually
+running it, not inferred:
+
+```
+$ flutter pub get   # inside libsFlutter/flutter_gsmsip
+Resolving dependencies...
+Because flutter_gsmsip depends on flutter_dialer from path which doesn't
+exist (could not find package flutter_dialer at "../flutter_dialer"),
+version solving failed.
+Failed to update packages.
+```
+
+Cause: `libsFlutter/flutter_dialer` was renamed to
+`libsFlutter/flutter_dialer_replacement` (its `pubspec.yaml` `name:` field
+changed too, from `flutter_dialer` to `flutter_dialer_replacement` — a
+real package rename, not just a directory move) during the
+`vdd-flutter_dialer_replacement` flow. Three consumers still reference
+the old name/path:
+
+- `flutter_gsmsip/pubspec.yaml`'s `dependency_overrides:` —
+  `flutter_dialer: path: ../flutter_dialer` (**this package's own file —
+  in scope for this flow**).
+- `flutter_gsm/pubspec.yaml`'s `dependencies:` *and*
+  `dependency_overrides:` — same stale entry, doubled (**not this
+  package's file — out of scope, but blocking**, since `flutter_gsmsip`
+  depends on `flutter_gsm`).
+- `flutter_tele/pubspec.yaml`'s `dependencies:` —
+  `flutter_dialer: ^2.0.0+101` (a pub.dev version reference to a
+  never-published package, previously only resolvable because something
+  upstream overrode it to a local path — that override is now also
+  broken). **Not this package's file — out of scope, but blocking**.
+
+Renaming just the `path:` target is not sufficient — pub requires a
+`path:` dependency's YAML key to match the target pubspec's `name:`
+field, so the fix is: `flutter_dialer:` → `flutter_dialer_replacement:`
+as the key (not just the path value) everywhere it's referenced, plus
+updating the two real Dart import sites
+(`flutter_gsm/lib/src/android/android_flutter_gsm.dart`,
+`flutter_tele/lib/src/dialer.dart`) from
+`import 'package:flutter_dialer/flutter_dialer.dart'` to
+`import 'package:flutter_dialer_replacement/flutter_dialer.dart'`
+(the internal file is still named `flutter_dialer.dart` — only the
+package name changed, confirmed by reading
+`flutter_dialer_replacement/lib/`'s actual file listing).
+
+This flow can fix its own `dependency_overrides` entry, but **cannot
+verify any of its own work** (`flutter pub get`, `flutter test`,
+`flutter analyze`) until `flutter_gsm`'s and `flutter_tele`'s pubspecs
+are also fixed — that's other packages' files. Flagged as a hard
+external blocker, not silently worked around.
 
 ## Problem Statement
 
@@ -81,6 +135,17 @@ whoever builds the next app on this library.
 
 ### Must Have
 
+0. **Given** the broken dependency graph documented above, **when** this
+   flow implements, **then** `flutter_gsmsip/pubspec.yaml`'s
+   `dependency_overrides:` entry is fixed to
+   `flutter_dialer_replacement: path: ../flutter_dialer_replacement`
+   (key and path both) — and `flutter pub get` is confirmed to at least
+   get past *this* package's own resolution step. Full green
+   `pub get`/`analyze`/`test` still depends on `flutter_gsm` and
+   `flutter_tele` fixing their own pubspecs (out of this flow's file
+   scope — flagged, not fixed here) — note that dependency explicitly in
+   this flow's status rather than silently declaring done once this
+   package's own file is correct.
 1. **Given** a `GatewayConfig`, **when** a consumer calls a new public
    `GatewayService.saveConfiguration(GatewayConfig)`, **then** it
    persists independent of `initialize()`/SIP-init success, using the
