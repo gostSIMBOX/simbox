@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-VISUAL
+IMPLEMENTATION
 
 ## Phase Status
 
@@ -14,22 +14,26 @@ REVIEW
 
 ## Blockers
 
-- Waiting on user approval of 01-requirements.md and 02-visual.md before moving to
-  Specifications.
+- Waiting on user review/sign-off of the implementation (see 05-implementation-log.md). One
+  item not pixel-verified: sticky table header while scrolling (verified by code review +
+  absence of layout errors across all 4 table pages, not by direct scroll-and-observe, since
+  mock data was too small to overflow the test viewport).
+- No git commit/push has been made. Note: `design/simbox-web-design-prototype-v2026` is its own
+  nested git repo (`origin/master`), separate from the outer `simbox.nativemind.net` repo.
 
 ## Progress
 
 - [x] Requirements drafted
-- [ ] Requirements approved
+- [x] Requirements approved
 - [x] Visual mockups drafted
-- [ ] Visual approved
-- [ ] Specifications drafted
-- [ ] Specifications approved
-- [ ] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
-- [ ] Documentation drafted
+- [x] Visual approved
+- [x] Specifications drafted
+- [x] Specifications approved
+- [x] Plan drafted
+- [x] Plan approved
+- [x] Implementation started
+- [x] Implementation complete (all 9 tasks done, manually verified in Chrome; see log)
+- [ ] Documentation drafted (optional phase, not started — not requested)
 - [ ] Documentation approved
 
 ## Context Notes
@@ -74,12 +78,14 @@ N/A — new flow.
 
 ## Next Actions
 
-1. Get explicit "requirements approved" + "visual approved" from the user (both drafted in the
-   same pass since the -dc mock already answers most visual-alignment questions).
-2. Resolve the three Open Questions in 01-requirements.md (non-table pages get pill treatment
-   or not; exact sidebar widths; default sidebar state on load) — currently answered with
-   reasonable defaults inline, but call out for explicit confirmation.
-3. On approval, move to SPECIFICATIONS: inventory exact `AppState` additions needed (sidebar
-   open/compact flag, active action-group key per page), enumerate the action groups per page
-   (reading `dongles_page.dart`, `diagmode_page.dart`, `hubs_page.dart` bodies, not yet read in
-   full), and design the `Sidebar`/`ActionGroupBar`/`StickyDenseTable` widget shapes.
+1. User reviews the implementation (working tree of the nested
+   `design/simbox-web-design-prototype-v2026` repo) and 05-implementation-log.md, and decides
+   whether to commit/push (not done automatically — separate git repo, no push without explicit
+   ask).
+2. Optional: do a direct scroll-and-observe check of the sticky table header with more mock
+   rows or a genuinely short window, since the automated Chrome session couldn't produce enough
+   overflow to see it happen pixel-by-pixel (see implementation log).
+3. Optional DOCUMENTATION phase (client-facing README) — not started, only pursue if requested.
+4. The three confirmations noted in Requirements/Specifications were resolved by proceeding on
+   the stated defaults (non-table pages get scroll-wrapper only, not pills; sidebar widths
+   208px/64px; overlay floats via Stack/Positioned) — flag to the user if any should change.
