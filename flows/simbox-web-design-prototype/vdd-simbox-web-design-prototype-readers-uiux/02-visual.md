@@ -1,7 +1,7 @@
 # Visual Mockups: simbox-web-design-prototype-readers-uiux
 
 > Version: 1.0
-> Status: REVIEW
+> Status: APPROVED
 > Last Updated: 2026-09-02
 
 ## Overview
@@ -202,6 +202,6 @@ state column:
 
 ## Approval
 
-- [ ] Reviewed by: Anton Dodonov
-- [ ] Approved on:
-- [ ] Notes:
+- [x] Reviewed by: Anton Dodonov
+- [x] Approved on: 2026-09-02
+- [x] Notes: Approved as drafted.

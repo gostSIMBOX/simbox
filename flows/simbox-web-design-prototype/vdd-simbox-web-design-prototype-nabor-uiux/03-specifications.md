@@ -694,8 +694,9 @@ remain intentionally deferred to a later architecture decision.
 This additive audit refines, but does not broaden, the approved universal command editor:
 
 - `send_may` is an operator callback-request USSD command, separate from call `spec=MAY`.
-- `send_mon` is a distinct operator request; its commercial meaning is not documented by source,
-  and the repository does not prove a paid-callback workflow.
+- `send_mon` is the balance top-up request: it asks another person to add funds to this SIM. The
+  product owner confirms this as the global MON meaning; Beeline's implementation is the free
+  “Пополни мой счёт” service. The repository does not prove a paid-callback workflow.
 - MSM is not a command-set command. It is the system-level regular-SMS fallback selected internally
   for MAY, using randomized callback text and Plan/SIM quotas.
 
@@ -703,7 +704,7 @@ The seed/audit model must classify command capability, not infer it from filenam
 
 | Set | MAY | MON |
 |---|---|---|
-| `beeline_spb` | active `*144*<number>#` | active `*143*<number>#` |
+| `beeline_spb` | active `*144*<number>#` | active `*143*<number>#`; owner-confirmed free “Пополни мой счёт” request |
 | `megafon_spb` | active `*144*<number>#` | active `*143*<number>#` |
 | `life` | active `*120*2*<number>#` | no-op/commented; copied config defect |
 | `velcom` | active `*131*<number>#` | no-op/commented; copied config defect |
@@ -714,3 +715,17 @@ The editor must preserve inactive artifacts for audit, while user-facing availab
 `active`, `inactive/no-op` and `unavailable`. It must not offer MSM as an editable operator command.
 Plan limits do not change capability classification. Runtime execution/correlation remains outside
 this prototype, as already specified.
+
+### Owner clarification 2.2 — MON metadata (2026-09-02)
+
+The typed command seed adds an operator-scoped semantic descriptor for `beeline_spb/send_mon`:
+
+- purpose: `balanceTopUpRequest`;
+- localized label: `Просьба пополнить счёт` / `Balance top-up request`;
+- charging note: the request service is free;
+- effect description: asks the destination person to transfer funds to the requesting SIM;
+- raw operation: USSD `*143*<number>#`.
+
+The core `balanceTopUpRequest` purpose belongs to global MON semantics. The Beeline service name,
+free-service note and `*143*<number>#` operation belong to its command definition. Other operator
+definitions may vary in service name, charging note and USSD code but not in the MON purpose.

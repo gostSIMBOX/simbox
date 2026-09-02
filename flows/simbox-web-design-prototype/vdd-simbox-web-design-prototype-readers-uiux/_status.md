@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-VISUAL
+IMPLEMENTATION
 
 ## Phase Status
 
-REVIEW
+APPROVED
 
 ## Last Updated
 
@@ -14,19 +14,22 @@ REVIEW
 
 ## Blockers
 
-- None. Visual mockups drafted; awaiting user approval before moving to Specifications.
+- None. All 7 plan tasks completed, verified live in-browser (Chrome, via claude-in-chrome),
+  `flutter test` (15/15) and `flutter analyze` (0 issues) both clean. Flow is functionally
+  complete. No commit made yet — only on explicit user request, per standing project convention.
 
 ## Progress
 
 - [x] Requirements drafted
 - [x] Requirements approved
 - [x] Visual mockups drafted
-- [ ] Visual approved
-- [ ] Specifications drafted
-- [ ] Specifications approved
-- [ ] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
+- [x] Visual approved
+- [x] Specifications drafted
+- [x] Specifications approved
+- [x] Plan drafted
+- [x] Plan approved
+- [x] Implementation started
+- [x] Implementation complete
 - [ ] Implementation complete
 - [ ] Documentation drafted (optional — only if requested)
 - [ ] Documentation approved
@@ -90,9 +93,7 @@ N/A — new flow.
 
 ## Next Actions
 
-1. Get explicit "visual approved" from the user (or address feedback on the mockups —
-   e.g. row-state coverage, column order, action-group grouping, warning-banner treatment).
-2. On approval, move to SPECIFICATIONS phase: define the `Reader` model (fields per the column
-   inventory), mock data seed (`lib/data/mock.dart`), `AdmPage.readers` enum addition, sidebar
-   entry, `ReadersPage` widget (`lib/pages/readers_page.dart`), and the four `ActionGroup`s
-   (Обновить, PIN, Поиск KI, APDU-команда) with their exact `AppState.push(...)` log-line shapes.
+Flow complete — all 7 implementation tasks done and verified (see `05-implementation-log.md`).
+Remaining, optional, user's call only:
+1. Committing the change (this project's convention: only on explicit request).
+2. Optional DOCUMENTATION phase (client-facing README) — not started, only pursue if requested.

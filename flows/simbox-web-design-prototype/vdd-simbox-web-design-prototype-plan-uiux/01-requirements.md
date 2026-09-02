@@ -147,6 +147,47 @@ Use a responsive master-detail workspace consistent with the approved Command Se
 There is no plan-comparison mode. Legacy has no separate compare operation, and reliable CRUD plus
 complete policy editing does not require one.
 
+## Explanation Banner (added 2026-09-02, product owner)
+
+A dismissible banner sits above the registry+detail workspace, explaining the Plan concept and
+a few specific field semantics in the operator's own words. Format decided via product-owner
+choice among three options (top banner / title popover / first-visit modal) — **top banner**
+chosen: always visible until dismissed, no click required to read it, doesn't block the
+workspace underneath. Once dismissed, a small "?" affordance next to the "Планы" page title
+reopens it — the explanation is never permanently lost, only tucked away.
+
+Exact copy (verbatim, do not paraphrase — these are the product owner's own words, including
+the specific field semantics):
+
+> **Пояснение**
+>
+> Планы нужны для 2 целей: 1) автоматизация хитрых запросов (например, вместо *100# — кнопка Get
+> balance); 2) групповая установка параметров симок. Допустимо использовать план default для
+> любых симок, экспериментов и новых операторов.
+>
+> time_wake / time_sleep — когда симка спит/просыпается (час), минуты выбираются алгоритмом
+> индивидуально для каждой симки. Если значение не в [0;23] — расписание выключено.
+>
+> Пауза между звонками: diff_slow — гарантированная пауза в любом случае; diff_min — пауза на
+> все звонки; пауза на симку берётся как min(diff_min; diff_min_out если GOO).
+>
+> После изменения плана нужно выбрать симки на вкладке «Симки» и нажать «Восстановить параметры
+> плана».
+
+Additional acceptance criteria (continuing the numbering below):
+
+25. The banner shows an info icon, the four paragraphs above (unmodified text), and a close (X)
+    control, positioned above the registry+detail split, never overlapping either pane.
+26. Closing the banner hides it and reveals a small "?" affordance near the "Планы" title;
+    clicking it reopens the banner. State is in-memory for the session (matches this
+    prototype's existing convention — e.g. `navCompact`, `logOpen` — no persistence across
+    reloads required).
+27. The banner's `time_wake`/`time_sleep` and `diff_slow`/`diff_min` explanations describe the
+    same fields the Timing/Directions policy sections (Editable Policy Families #4-5) expose —
+    if those sections' field labels are later reworded, the banner copy must be checked for
+    consistency, but the banner text itself is not re-derived from the fields' UI labels (it's
+    the source explanation, written first).
+
 ## Acceptance Criteria
 
 ### Must Have
@@ -206,20 +247,33 @@ complete policy editing does not require one.
   authorize persistence.
 - Existing user/generated changes in the nested target repository must be preserved.
 
-## Open Questions
+## Open Questions — resolved 2026-09-02 (product owner)
 
-- [ ] Confirm the recommended active seed: import the 37 `plan.list` plans and keep the nine
-  unlisted test/orphan IDs audit-only.
-- [ ] Confirm deletion policy: protect `default`, block deletion while any SIM references a plan,
-  and require confirmation for an unused plan.
-- [ ] May the command-set association of an existing plan be edited, or should changing ownership
-  require Clone into the target command set?
-- [ ] Group ownership needs reconfirmation. The previously approved Command Sets amendment placed
-  lifecycle group mappings in Plan, but direct tracing now shows that Plan files contain no group
-  mapping, operator/region `GROUP_*` values live in command-set `config.sh`, concrete target group
-  numbers live in dialplan route resources, and the current group lives on SIM. Recommended
-  correction: keep group routing/mapping outside Plan policy and let Plan display it as read-only
-  route context only.
+- [x] **Initial seed**: import the 37 `plan.list` plans as the active registry; keep the nine
+  unlisted test/orphan IDs (`kievstar_test`, `local`, `mts_spb_test`, `noname`,
+  `nonamevelcom_test`, `nonamevelcom_testvelcom_test`, `tele2`, `velcom_test`, `velcom_test2`)
+  audit-only, not shown in the default active list. Confirmed as recommended.
+- [x] **Deletion policy**: all three rules apply — `default` is protected from deletion;
+  deletion is blocked while any SIM references the plan; an unreferenced, non-default plan
+  requires an explicit confirmation dialog. Confirmed as recommended.
+- [x] **Command-set association editability**: **direct editing is allowed** — an existing
+  plan's command-set field can be changed in place, not only via Clone-into-target. (This is the
+  opposite of the doc's earlier "recommended" default — Clone remains the primary path for
+  *creating* a new plan per the Recommended Interaction Model, but re-pointing an *existing*
+  plan's command-set is now an ordinary field edit, gated by the same Save/Cancel draft as every
+  other policy family.)
+- [x] **Group ownership**: **accept the new evidence** — Plan does **not** get an editable
+  lifecycle-group mapping in this iteration. This overturns the earlier-approved Command Sets
+  amendment. Verified independently against the live `vdd-simbox-web-design-prototype-zones-uiux`
+  implementation before deciding (not just the requirements text): `lib/features/zones/
+  models.dart`'s `GroupRule` already stores `{limitSlot (0-9), alg, type, group}` per zone route
+  — `group` *is* the target SIM group number, parsed from `extensions_dial_zones.conf`'s
+  `L1D=NS101`-style resources exactly as `select.c`'s `get_cr_group()` does it, already live and
+  editable in the shipped Zones feature. Plan owns policy *for* a numbered slot (`alg`, `nodiff`,
+  limits); Zones owns *which SIM group* that slot routes to. Duplicating group-number ownership
+  into Plan would either duplicate Zones' data with no single source of truth, or drift from it.
+  Plan's Directions section shows group/route context **read-only**, sourced live from the Zones
+  registry, per Legacy Addition 1.2's Acceptance Criteria #20-22 (unchanged).
 
 ## Legacy Addition 1.1 — DEF direction zones
 
@@ -325,6 +379,16 @@ Additional acceptance criteria:
 22. Route context is derived from `extensions_dial_zones.conf`, while candidate-selection meaning
     is derived from `libsCpp/asterisk-chan-svistok/src`; neither is reverse-engineered from labels.
 
+## Acceptance Criteria — Iteration 2 (resolutions above, 2026-09-02)
+
+23. An existing plan's command-set field is directly editable (not gated behind Clone) — the
+    edit stages into the same per-plan Save/Cancel draft as every other policy family; the
+    plan's ID does not change when its command-set changes.
+24. No Plan field in this iteration lets an operator set or change a SIM's lifecycle group or a
+    route's target group number. Any group/route number shown in the Directions section is
+    read-only, sourced live from the Zones registry (`vdd-simbox-web-design-prototype-zones-
+    uiux`'s `ZoneController`/`GroupRule`), never a second copy of that data owned by Plan.
+
 ## References
 
 - `legacy/simbox-desktop-v2014/www/simbox/plan.php`
@@ -349,16 +413,19 @@ Additional acceptance criteria:
 ## Approval
 
 - [ ] Requirements approved by product owner
-- [ ] Approved on: 2026-09-01
-- [ ] Notes: pending answers to the open questions above
+- [ ] Approved on:
+- [ ] Notes: all four open questions resolved 2026-09-02 (see Open Questions section) — pending
+  explicit "requirements approved" before advancing to Visual.
 
 ## Legacy Addition 1.3 — MAY, MON and MSM Plan policy semantics (2026-09-02)
 
 This source audit resolves the earlier instruction not to invent commercial meanings:
 
 - `may_limit` limits counted attempts to execute the command set's operator callback-request USSD.
-- `mon_limit` limits counted attempts to execute the distinct, commercially undocumented MON
-  operator request. Legacy automatic MON triggering is disabled.
+- `mon_limit` limits counted attempts to execute the distinct MON balance top-up request. The
+  product owner confirms the global meaning as asking another person to top up this SIM's balance;
+  Beeline implements it as the free “Пополни мой счёт” service. Legacy automatic MON triggering
+  is disabled.
 - `msm_limit` limits SMS substitutions for MAY; MSM means a callback-request SMS behaviour, not
   Multiple-SIM. It is additionally constrained by `smsout_soft` and increments `smsout_sended`.
 - these are Plan-configured policies copied to SIM settings; `*_sended` values are per-SIM runtime
@@ -379,5 +446,26 @@ The SIM/Plan column manifests must include MSM without conflating it with the un
 relationship. Recommended labels are `MAY attempts`, `MON attempts`, `Callback SMS attempts`, with
 raw aliases `may_sended`, `mon_sended`, `msm_sended` shown in technical detail.
 
+The archived `plan09042014.tar.gz` contains 39 named Plan records (excluding hidden template
+files). Their raw distributions are:
+
+| Field | Distribution |
+|---|---|
+| `may_limit` | 28 × `5`, 11 × `0` |
+| `mon_limit` | 19 × `2`, 9 × `3`, 6 × `4`, 5 × `0` |
+| `msm_limit` | 27 × `1`, 12 × `0` |
+| `smsout_soft` | 25 × `0`, 5 × `1`, 5 × `50`, 2 × `190`, 1 × `10`, 1 × `95` |
+
+Only eight named records have both `msm_limit > 0` and `smsout_soft > 0`; MSM is ineffective in
+the other 19 records that nominally have `msm_limit=1`. This is preserved seed evidence, not a
+recommended modern default.
+
 Evidence: `ai/sms/send_maymon.php`, `nabor/*/commands/send_may.sh`,
 `nabor/*/commands/send_mon.sh`, the command-set reset scripts and `www/simbox/sim.php`.
+
+### Owner clarification 1.4 — MON semantics (2026-09-02)
+
+For every Plan, label `mon_limit` as **Лимит просьб пополнить счёт** / **Balance top-up request
+limit**. The tooltip states that this limits counted attempts to invoke the selected operator's
+MON service and does not count confirmed transfers. Beeline detail additionally names the free
+“Пополни мой счёт” service; other sets show their own raw command metadata.

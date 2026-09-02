@@ -10,12 +10,23 @@ REVIEW
 
 ## Last Updated
 
-2026-09-02 by Codex
+2026-09-02 by Claude
 
 ## Blockers
 
-- Product-owner answers to the four remaining open requirement decisions, including the newly
-  evidenced conflict over lifecycle-group ownership.
+- Waiting on explicit "requirements approved" from the product owner. All four open questions
+  are now resolved (recorded in 01-requirements.md's Open Questions section and new Acceptance
+  Criteria #23-24):
+  1. Seed: 37 active + 9 audit-only — confirmed as recommended.
+  2. Deletion policy: all three rules (protect default, block if referenced, confirm if unused)
+     — confirmed as recommended.
+  3. Command-set association: **direct editing allowed** for an existing plan (not Clone-only —
+     this is the opposite of the doc's original recommendation).
+  4. Group ownership: **new evidence accepted** — Plan gets no editable group mapping; Directions
+     shows group/route context read-only from the live Zones registry. This overturns the
+     earlier-approved Command Sets amendment. Verified independently against
+     `lib/features/zones/models.dart`'s actual shipped `GroupRule` shape before deciding, not
+     just the requirements narrative.
 
 ## Progress
 
@@ -66,5 +77,8 @@ N/A — new flow. It follows the completed Command Sets workspace but does not f
 
 ## Next Actions
 
-1. Resolve the four remaining open requirement decisions.
-2. Record explicit `requirements approved` before drafting ASCII visual states.
+1. Get explicit "requirements approved" from the product owner now that all four open questions
+   are resolved.
+2. On approval, move to VISUAL: draft ASCII mockups for the master-detail workspace (registry +
+   semantic-section detail pane), the Directions section's read-only Zones-sourced route
+   context, and the direct command-set-edit interaction (per resolved Q3).

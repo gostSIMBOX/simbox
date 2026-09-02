@@ -212,7 +212,8 @@ The active `chan_svistok` selector recognises:
 - `NOS` — classification unavailable because the server did not respond;
 - `NE0`, `NEC`, `NEM` — distinct server/classifier no-response variants; retain their raw suffix
   and mark the human expansion unresolved until a producer definition is found;
-- `SOU` — self-call; asset depends on incoming/outgoing context;
+- `SOU` — internal SIM-to-SIM call: one managed SIM calls another managed SIM; the asset depends
+  on whether the displayed row is the originating or receiving leg;
 - `IMO` — IM-related request class;
 - `SYS` — system request class;
 - `ROB` and `BLO` — suspicious automated/call-through classifications, with `BLO` the stronger
@@ -417,7 +418,7 @@ mechanisms.
 |---|---|---|---|---|
 | `call.special.shortBeacon` | call `spec=MAY` / numeric `spec=20` | asynchronous short outgoing call through the `MAY` dialplan route | Короткий звонок-маяк | Short-call beacon |
 | `command.operatorCallbackRequest` | `send_may` / `may_*` | operator-specific USSD request sent to a destination number | Операторский запрос перезвонить | Operator callback request |
-| `command.operatorMonRequest` | `send_mon` / `mon_*` | operator-specific USSD request whose commercial meaning is not documented in this repository | Операторский запрос MON | Operator MON request |
+| `command.balanceTopUpRequest` | `send_mon` / `mon_*` | request asking another person to top up this SIM's balance | Просьба пополнить счёт | Balance top-up request |
 | `command.callbackSmsFallback` | `MSM` / `msm_*` | ordinary outbound SMS with a randomized callback-request text, used only as a MAY fallback | SMS с просьбой перезвонить | Callback-request SMS |
 
 `MSM` must never be expanded or translated as Multiple-SIM. It is unrelated to the separately
@@ -431,6 +432,9 @@ abbreviation is not recoverable from source, so UI copy describes the proven beh
 - `extensions_dial_zones.conf` labels the route `;mayak` and calls `makecall-may`.
 - `extensions_may.conf` queues a call through `L1D=HZ298`; `makecall5.sh` gives the Asterisk spool
   job `WaitTime: 7` and a post-answer `wait5` context.
+- `WaitTime: 7` is the call-file answer timeout, not a seven-second USSD transition or `W` delay.
+  The same spool file requests extension `100`, but `wait5` defines only extension `s`; the audited
+  dialplan therefore contains no matching post-answer continuation for `100`.
 - The spawned `makecall4` path resets `spec` to `LOC`, so the original request and spawned short
   call may not retain the same recorded special mode. The UI must not merge their history rows or
   claim end-to-end MAY propagation.
@@ -451,8 +455,8 @@ randomized 4–14 seconds, producing a combined post-call delay of 7–22 second
 `try_may.sh` proceeds only when `<IMSI>.need_sms == 1`. That flag is set when `stat_satt` exceeds
 `satt_soft`; `stat_satt` is explicitly documented in `chan_dongle.h` as the number of consecutive
 outgoing calls without SMS. It increments on answered outgoing calls and is reset by an SMS/USSD
-send helper. Consequently this is an automated traffic-balancing request, not a generic action
-after every failed call.
+send helper. Consequently this is an automated traffic-mix/SMS-generation request, not a generic
+action after every failed call.
 
 `send_maymon.php` resolves the SIM's Plan and command set, then either executes that set's
 `send_may.sh` or substitutes MSM. Proven active MAY commands are:
@@ -473,15 +477,23 @@ limit does not prove an executable command.
 
 `callendin.sh` calls `try_mon.sh` after an incoming call, but `try_mon.sh` prints
 `DISABLED IN SOFT !!!`; its intended `qos == SLOW`, delayed `send_maymon.php ... mon` branch is
-fully commented. No other active repository caller was found. The only active MON scripts are
+fully commented. `extensions_incoming_full.conf` assigns `SLOW` when the previous matching
+connection is 30 minutes old or older. No other active repository caller was found. The only
+active MON scripts are
 `beeline_spb` and `megafon_spb`, both using `*143*<number>#`; Life, Velcom and Tele2 scripts are
 commented/no-op and also contain copied configuration mistakes.
 
-The repository proves only that MON is an operator-specific USSD request to a number. It contains
-no callback bridge, charging, billing or answer-handling path that would justify the label
-“paid callback”. Until product-owner evidence supplies the commercial meaning, the UI must use
-**Операторский запрос MON**, expose the operator code as provenance and mark automatic triggering
-as disabled in legacy.
+The repository proves that MON is an operator-specific USSD request to a number and contains no
+callback bridge, charging, billing or answer-handling path that would justify the label
+“paid callback”. The product owner confirms the global MON business meaning as a request asking
+another person to transfer money to the requesting SIM's balance when funds are insufficient.
+For Beeline this is the free service **«Пополни мой счёт»** using `*143*<number>#`. The visible
+MON label for every supported command set must therefore be
+**Просьба пополнить счёт** / **Balance top-up request**, with tooltip:
+**Отправляет указанному абоненту просьбу пополнить баланс этой SIM. MON · команда выбранного
+набора.** Operator-specific detail may additionally show the service name, charging note and raw
+USSD; for Beeline: **Бесплатная услуга «Пополни мой счёт» · `*143*номер#`.** Automatic MON
+triggering remains disabled in legacy for every set.
 
 ### MSM is a constrained MAY fallback
 
@@ -535,6 +547,29 @@ successful-delivery state.
    would be semantically false.
 7. Raw abbreviations remain searchable aliases, while localized visible labels describe proven
    behaviour.
+8. MON always resolves to “Просьба пополнить счёт”. Command sets may override only the operator
+   service name, charging note and USSD operation, not the core MON meaning.
+
+### Owner clarification 1.2 — MON business meaning (2026-09-02)
+
+The product owner explicitly confirms that MON means a request to top up the SIM's balance. Beeline
+`*143#` belongs to the free “Пополни мой счёт” service. This clarification is authoritative for
+the global MON label; operator-specific metadata remains attached to each command implementation.
+
+### Owner clarification 1.3 — SOU internal SIM-to-SIM call (2026-09-02)
+
+The product owner confirms that `SOU` does not mean a SIM calling itself. It means an internal
+call where one managed SIM calls another managed SIM:
+
+- `SOU+O` — originating leg: this SIM calls another SIM in the system;
+- `SOU+I` — receiving leg: this SIM receives the call from another SIM in the system;
+- bare `SOU` — internal SIM-to-SIM call when the leg/direction is not shown separately;
+- `SOU2/51` — a second legacy variant of the same internal SIM-to-SIM class; its additional
+  distinction remains technical until the producer path is differentiated.
+
+Required Russian label: **Внутренний звонок между SIM**. Required English label:
+**Internal SIM-to-SIM call**. The wording “звонок самому себе”, “self-call” and «свой-себе» is
+prohibited in UI labels and tooltips.
 
 ### Additional evidence
 
@@ -551,3 +586,68 @@ successful-delivery state.
 - `libsCpp/asterisk-chan-svistok/src/chan_dongle.h`
 - `libsCpp/asterisk-chan-svistok/src/at_response.c`
 - `libsCpp/asterisk-chan-svistok/src/helpers.c`
+
+## Legacy Addition 1.4 — BUSY icon and dual-axis reuse (2026-09-02)
+
+This addition corrects the earlier review statement that `DIALSTATUS=BUSY` needs a new Fugue icon.
+Active legacy rendering already defines the BUSY glyph explicitly:
+
+```php
+if($ds=="BUSY") $ds_html="<img src=imgs/recog_types/30.png>";
+```
+
+`www/simbox/modules/html.php::html_dialstatus()` is used by the active call-log table in
+`www/simbox/log/calls.php`. The same helper file also maps recognition result `30` to the same
+`recog_types/30.png` asset. This is intentional image reuse across two semantic axes, not proof
+that the values are interchangeable.
+
+Required registry entries:
+
+| Semantic ID | Raw value | Label | Tooltip | Glyph |
+|---|---|---|---|---|
+| `call.result.busy` | `DIALSTATUS=BUSY` | Абонент занят | Удалённая сторона занята · `DIALSTATUS=BUSY` · normally `CC_CAUSE=17` | Fugue `cup-empty.png` |
+| `recognition.busyTone` | `REC=30` | Распознан сигнал «занято» | Аудиораспознавание обнаружило сигнал «занято» · `REC=30` | Fugue `cup-empty.png` |
+
+The call result is derived in both outgoing and incoming end handlers when `CC_CAUSE=17`; those
+handlers also set `END_PARTY=2`. The modem driver independently translates an actual modem `BUSY`
+response into `AST_CONTROL_BUSY`. The final tooltip may add `END_STATUS`, `CC_CAUSE` and
+`END_PARTY` from the row, but it must not present `REC=30` unless recognition actually produced it.
+
+There is a third unrelated busy concept: `sim/state/<IMSI>.busy=1` means the SIM/modem resource is
+currently occupied by a call. It is a live resource-occupancy flag and must not use the completed
+call-result tooltip “Абонент занят”.
+
+### Asset provenance and density
+
+- Legacy asset: `www/simbox/imgs/recog_types/30.png`, 16×16.
+- Current prototype asset: `assets/imgs/recog_types/30.png`, 16×16. When composited on a light
+  background it is pixel-identical to the visible legacy rendering; differing file hashes come
+  from RGB values in fully transparent pixels.
+- Fugue origin: `cup-empty.png`. The legacy rendition is a grayscale modification of the upstream
+  glyph, with 27 source pixels differing from canonical Fugue.
+- Canonical Fugue provides verified `cup-empty.png` files at both 16×16 and 32×32.
+
+Because the product requires Fugue density pairs, implementation should vendor canonical
+`cup-empty.png` under its upstream filename in the 1× and 2× folders and render it in the same
+16-logical-pixel box. It must not retain the current single-resolution asset or introduce a new
+approximate BUSY glyph. If exact grayscale legacy coloration is later required, that becomes an
+explicit custom redraw decision rather than being mislabeled as an unmodified Fugue pair.
+
+Additional acceptance criteria:
+
+9. `DIALSTATUS=BUSY` resolves to `cup-empty.png`, not to an unresolved/missing-icon slot.
+10. `DIALSTATUS=BUSY`, `REC=30` and live resource `busy=1` have separate registry IDs and tooltips.
+11. The Icons page visibly lists the shared glyph twice under Call result and Recognition, while
+    provenance detail explains intentional reuse.
+12. Both 16×16 and 32×32 canonical Fugue files exist and are selected by display density without
+    changing the 16px logical footprint.
+
+Evidence:
+
+- `legacy/simbox-desktop-v2014/www/simbox/modules/html.php:137-165`
+- `legacy/simbox-desktop-v2014/www/simbox/log/calls.php:246-259`
+- `legacy/simbox-desktop-v2014/system/svistok/callendout.sh:169-172`
+- `legacy/simbox-desktop-v2014/system/svistok/callendin.sh:74-77`
+- `libsCpp/asterisk-chan-svistok/src/at_response.c:2553-2556`
+- `libsCpp/asterisk-chan-svistok/src/stat.c:20-35,120-153`
+- `nativemind-adminka/assets/adminka/adminka-to-fugue-map.json`
