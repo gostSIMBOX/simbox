@@ -214,6 +214,12 @@ complete policy editing does not require one.
   and require confirmation for an unused plan.
 - [ ] May the command-set association of an existing plan be edited, or should changing ownership
   require Clone into the target command set?
+- [ ] Group ownership needs reconfirmation. The previously approved Command Sets amendment placed
+  lifecycle group mappings in Plan, but direct tracing now shows that Plan files contain no group
+  mapping, operator/region `GROUP_*` values live in command-set `config.sh`, concrete target group
+  numbers live in dialplan route resources, and the current group lives on SIM. Recommended
+  correction: keep group routing/mapping outside Plan policy and let Plan display it as read-only
+  route context only.
 
 ## Legacy Addition 1.1 — DEF direction zones
 
@@ -238,8 +244,9 @@ called number
   `beeline_msk` are merged only for the same operator and region; canonical IDs follow the live
   Zones registry (`beeline_*`, `megafon_*`, and so on).
 - `extensions_dial_zones.conf` turns the named zone into one or more resource descriptors. The
-  descriptor parser in `svistok-aa/select.c` reads the `L` digit as `limitnum`, the next character
-  as the selection algorithm/modifier and the two-letter segment as `billing_direction`.
+  current descriptor parser in `libsCpp/asterisk-chan-svistok/src/select.c` reads the `L` digit as
+  `limitnum`, the next character as the selection modifier and the two-letter segment as
+  `billing_direction`; the archived `svistok-aa/select.c` contains the same legacy scheme.
 - Plan owns reusable policy for the numbered slots (`alg`, `nodiff`, `limit_max`, `limit_hard`);
   it does not own or edit thousands of destination-prefix masks.
 - Slot 0 and the partially propagated slot 5 occur in runtime/copy paths but are not complete
@@ -264,6 +271,60 @@ Additional acceptance criteria:
 19. The requirements/specification audit records the compatibility disposition of slots 0 and 5
     before implementation.
 
+## Legacy Addition 1.2 — Dialplan route and group-based SIM selection
+
+The source-of-truth chain continues beyond the DEF zone:
+
+```text
+Zone / naprstr
+  -> extensions_dial_zones.conf chooses a route resource
+  -> resource encodes Plan slot + route modifier + limit mode + billing code + group
+  -> libsCpp/asterisk-chan-svistok/src/select.c parses the resource
+  -> candidate SIMs are filtered by current group, dial availability and selected-slot limit
+  -> Plan-derived eligibility and sorting rules choose one available SIM
+```
+
+For example, `L1D=NS101` is parsed as:
+
+| Segment | Verified meaning |
+|---|---|
+| `L1` | numbered policy/limit slot 1 |
+| `D` | route selection modifier stored as `cr->alg`; not the same field as a Plan's persisted `alg.1` |
+| `=` | limit-use mode (`limittype`) |
+| `NS` | two-character billing direction |
+| `101` | required current SIM group |
+
+`get_cr_group()` performs this parse. `pvt_select_create()` then admits a device only when
+`CONF_SHARED(pvt, group) == cr->group`, `can_dial(...)` succeeds and the selected limit permits
+the call. Later stages apply IM history, QoS, PRO/capability, work-state and difference filters,
+then shuffle/sort and lock the selected device.
+
+The current group is loaded from `sim/settings/<IMSI>.group` and can be changed through
+`dongle setgroup` / `dongle setgroupimsi`. Operator/region configs contain lifecycle constants
+that correspond directly to major dialplan groups—for example MegaFon SPb `GROUP_WORK_OK=101`,
+Beeline SPb `=102`, MTS SPb `=103`, MegaFon Moscow `=104`, Tele2 SPb `=109`, Kyivstar `=111`
+and Rostelecom SPb `=220`. The dialplan also references additional operational groups not fully
+described by those constants, so the UI must not infer a complete group taxonomy from
+`GROUP_WORK_OK` alone.
+
+Consequences for the Plan UI:
+
+- Plan does not choose a SIM group and does not edit the dialplan resource.
+- A Plan policy slot may show the routes and target groups that use it as read-only operational
+  context.
+- Route resources belong to the routing/dialplan model associated with Directions; current group
+  belongs to SIM runtime.
+- Until group ownership is reconfirmed, no editable lifecycle-group mapping is added to Plan.
+
+Additional acceptance criteria:
+
+20. A route-context row keeps zone, slot, modifier, limit mode, billing code and target group as
+    separate typed values; the compact resource string may be shown only as technical provenance.
+21. The Plan editor does not promise that changing a Plan changes group membership or dialplan
+    routing.
+22. Route context is derived from `extensions_dial_zones.conf`, while candidate-selection meaning
+    is derived from `libsCpp/asterisk-chan-svistok/src`; neither is reverse-engineered from labels.
+
 ## References
 
 - `legacy/simbox-desktop-v2014/www/simbox/plan.php`
@@ -274,6 +335,10 @@ Additional acceptance criteria:
 - `legacy/simbox-desktop-v2014/asterisk/extensions/extensions_dial_zones.conf`
 - `legacy/simbox-desktop-v2014/asterisk/extensions/zones/`
 - `legacy/simbox-desktop-v2014/svistok-aa/select.c`
+- `legacy/simbox-desktop-v2014/nabor/*/config.sh`
+- `libsCpp/asterisk-chan-svistok/src/select.c`
+- `libsCpp/asterisk-chan-svistok/src/share.c`
+- `libsCpp/asterisk-chan-svistok/src/svistok/cli.c`
 - `flows/simbox-web-design-prototype/vdd-simbox-web-design-prototype-zones-uiux/`
 - `legacy/simbox-desktop-v2014/var/simbox/plan09042014.tar.gz`
 - `design/simbox-web-design-prototype-v2026/lib/pages/plan_page.dart`

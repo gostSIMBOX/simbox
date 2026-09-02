@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-IMPLEMENTATION
+PLAN
 
 ## Phase Status
 
-APPROVED
+REVIEW
 
 ## Last Updated
 
@@ -14,23 +14,25 @@ APPROVED
 
 ## Blockers
 
-- None. User approved the implementation 2026-09-02.
-- No git commit/push has been made (not requested). Reminder for any future session:
-  `design/simbox-web-design-prototype-v2026` is its own nested git repo (`origin/master`),
-  separate from the outer `simbox.nativemind.net` repo — same as fix1/fix2's precedent.
+- Waiting on user approval of the Iteration 2 amendments to 03-specifications.md and
+  04-plan.md before starting Implementation. (Requirements + Visual approved 2026-09-02.)
 
 ## Progress
 
-- [x] Requirements drafted
+**Iteration 1 (DEF-codes only) — shipped, see 05-implementation-log.md's first session:**
+- [x] Requirements/Visual/Specifications/Plan/Implementation all done and approved 2026-09-02.
+
+**Iteration 2 (group-selection rule layer) — in progress:**
+- [x] Requirements amended
 - [x] Requirements approved
-- [x] Visual mockups drafted
+- [x] Visual mockups amended
 - [x] Visual approved
-- [x] Specifications drafted
-- [x] Specifications approved
-- [x] Plan drafted
-- [x] Plan approved
-- [x] Implementation started
-- [x] Implementation complete (all 9 tasks done, manually verified in Chrome; see log)
+- [x] Specifications amended
+- [ ] Specifications approved
+- [x] Plan amended
+- [ ] Plan approved
+- [ ] Implementation started
+- [ ] Implementation complete
 - [ ] Documentation drafted (optional phase, not started — not requested)
 - [ ] Documentation approved
 
@@ -80,6 +82,57 @@ APPROVED
   starting a local dev server for a Chrome check) when this new request arrived — not resumed;
   noted as a loose end, not a blocker for this new flow, since the code itself is committed and
   the build succeeded before the interruption.
+
+## Context Notes (Iteration 2 — group-selection rule layer)
+
+- **Discovery source**: user pointed to `legacy/simbox-desktop-v2014/asterisk/extensions/
+  extensions_dial_zones.conf` (dialplan) and `libsCpp/asterisk-chan-svistok/src/select.c`
+  (channel-driver device selection) — read both fully this session.
+- **What a zone actually is, precisely**: DEF-codes decide which zone a dialled number belongs
+  to (iteration 1, done). `extensions_dial_zones.conf`'s `[macro-makecall-std]` then maps each
+  zone to an ORDERED list of `Macro(makecall-ru, <selector>, ...)` calls — Asterisk falls
+  through to the next one only if the previous `Dial()` fails (`Goto(h-${DIALSTATUS},1)` in
+  `[macro-dialdongle]`), i.e. this is a **priority-ordered fallback list**, not a set.
+- **Selector string grammar** — `L<N><alg><type>=<XX><GGG>` (e.g. `L1D=NS101`), parsed byte-by-
+  byte by `get_cr_group()` in `select.c` (lines ~148-177):
+  - `L` — literal marker.
+  - `<N>` (digit 0-9) — index into the SIM's `limit[10]` array (`chan_dongle.h:134`) — the same
+    LIMIT0..LIMIT9 concept as the Sims table's `LIMIT0`/`LIMIT1` columns (`limitnum`).
+  - `<alg>` (one of `^ * d D > <`) — load-balancing tie-breaker among candidate SIMs in the
+    matched group (`alg`, compared against each SIM's own per-slot `alg[10]` tag deeper in
+    `select.c`, e.g. `'P'`/`'v'` gate PRO-traffic routing — full ranking logic (lines 400-900ish)
+    is intricate; not required reading to expose an editable rule, just to label the known
+    letters sensibly in the UI).
+  - `<type>` (one of `- = _`) — whether that limit slot is enforced (`-`/`_` = skip the check).
+  - `<XX>` (2 uppercase letters) — `billing_direction`, written back onto the SIM after a
+    successful call (`select.c:1036`, `select.c:1075`). Overlaps with `icon_map.dart`'s
+    `_naprMap` codes for most zones (`NS`=megafon_spb, `BS`=beeline_spb, `SS`=mts_spb, `KU`=
+    kievstar — all consistent with the zone's own rules) but **is its own namespace**, not
+    guaranteed identical — e.g. `rostel_spb_mob`'s rules use code `SR`, which in `_naprMap` is
+    already `mts_ru`'s code; treat as a separate, zone-level, freely-editable 2-letter field
+    (default-suggest the `_naprMap` code when the zone has one, but don't force equality).
+  - `<GGG>` (integer) — target **SIM group number**, the exact same `group` field already shown
+    per-SIM in the Sims table (101, 333, 334, ... in mock data).
+- **Scope boundary decided**: only `[macro-makecall-std]` (the default/normal-traffic rule set)
+  is in scope for this iteration. The file also defines separate rule sets for special traffic
+  modes — `makecall-pre` (prepaid surcharge), `makecall-pos` (postpaid), `makecall-sou`
+  ("source"/test calls), `makecall-mag` ("mayak"/beacon), `makecall-nav` (blocked subscriber) —
+  each with its own, mostly-sparser, per-zone rule list. These are a **separate, deeper,
+  out-of-scope layer** for this iteration (Won't Have) — surfaced here only so a future flow
+  doesn't have to rediscover them.
+- **Not every zone has std rules today**: some zones (e.g. `beeline_sz`) have no case at all in
+  `[macro-makecall-std]`'s dispatcher — calls for them currently fall through with no group
+  rule. Some zones' dispatch `GotoIf` is commented out even though the rule block still exists
+  below it (e.g. `meg_ru` — rules present, unreachable) — both are exactly the kind of
+  legacy incompleteness ("не успели доделать") this page should surface and let the operator
+  fix, not silently normalize away. New zones (created via this UI) naturally start with zero
+  rules, same as they start with zero DEF-codes.
+- **UI shape decided via AskUserQuestion**: add a second editable section per zone — an
+  ordered, add/remove/reorder list of structured rule rows (limit slot, alg, type, group number;
+  billing code stays zone-level, not per-rule, since every rule under one zone in the legacy
+  data uses that same code) — alongside (not replacing) the existing DEF-codes textarea.
+  Structured rows, not a textarea, since each rule has multiple distinct typed fields (unlike
+  a DEF-code, which is one opaque pattern string).
 
 ## Fork History
 

@@ -1,14 +1,15 @@
 # Visual Mockups: simbox-web-design-prototype-zones-uiux
 
-> Version: 1.0
+> Version: 2.0
 > Status: APPROVED
-> Last Updated: 2026-09-01
+> Last Updated: 2026-09-02
 
 ## Overview
 
 ASCII mockups for the new "Направления (DEF коды)" section — a registry-pane + detail-pane
-workspace mirroring `lib/features/command_sets/`'s already-implemented layout, scaled down to a
-single-textarea detail body (no command/response-rule sections needed).
+workspace mirroring `lib/features/command_sets/`'s already-implemented layout. Iteration 1
+(shipped) has a single-textarea detail body. Iteration 2 (this amendment) adds a second section
+below it: an ordered, editable list of group-selection rules.
 
 ---
 
@@ -61,6 +62,51 @@ count and hint text. No save bar visible yet — nothing edited.
 Matches Наборы команд's `_DraftBar` exactly: info icon + message, Cancel discards back to the
 saved value, Save (gradient button) commits — replaces the whole code list per Acceptance
 Criteria #5.
+
+## Screen: Zone detail — with group-selection rules (Iteration 2)
+
+```
++-------------------------------------------------+
+| (icon) МегаФон СПб                     [pencil][≡]|
+| megafon_spb · СПб · код: NS                       |
++-------------------------------------------------+
+|  DEF-коды (20)                                     |
+|  +---------------------------------------------+  |
+|  | 792109XXXXX                                  |  |
+|  | ...                                          |  |
+|  +---------------------------------------------+  |
+|                                                     |
+|  Правила выбора группы (4)          [+ добавить]   |
+|  +---------------------------------------------+  |
+|  | # | L  | alg | type | группа |            |  |
+|  |---|----|-----|------|--------|------------|  |
+|  | 1 |[1v]|[Dv] |[=v]  |[101__] | [^][v][x]   |  |
+|  | 2 |[3v]|[>v] |[_v]  |[102__] | [^][v][x]   |  |
+|  | 3 |[3v]|[>=v]|[_v]  |[162__] | [^][v][x]   |  |
+|  | 4 |[1v]|[Dv] |[=v]  |[205__] | [^][v][x]   |  |
+|  +---------------------------------------------+  |
+|                                                     |
+|  (i) Есть несохранённые изменения [Отмена][Сохранить]|
++-------------------------------------------------+
+```
+
+Each row: limit-slot dropdown (0-9), algorithm dropdown (raw letters `D ^ * > <`, per Open
+Questions), type dropdown (raw `= - _`), a free-text group-number field, then move-up/move-down/
+delete icon buttons (`^`/`v`/`x`) — same move-arrow visual language as fix2's `ColumnsEditor`
+chips. Order is the fallback priority (row 1 tried first). Adding, editing, reordering, or
+deleting a rule dirties the same per-zone draft as the DEF-code textarea — one Save/Cancel bar
+governs both sections together (Acceptance Criteria #11-14).
+
+## Screen: Zone detail — empty group-rules list (e.g. `beeline_sz`, never wired up in legacy)
+
+```
+|  Правила выбора группы (0)          [+ добавить]   |
+|  +---------------------------------------------+  |
+|  |     Правил пока нет. Нажмите «+ добавить».   |  |
+|  +---------------------------------------------+  |
+```
+
+Same "incomplete on purpose, now fixable" framing as an empty DEF-code list.
 
 ## Screen: Create zone dialog
 
@@ -180,9 +226,10 @@ DEF-коды (N)
 
 ## Notes
 
-- No tabbed sections (unlike command sets' Команды/Правила ответов `SegmentedButton`) — a zone
-  has exactly one editable body, the code list, so the detail pane goes straight from header to
-  textarea.
+- No tabbed sections (unlike command sets' Команды/Правила ответов `SegmentedButton`) — a zone's
+  two editable bodies (DEF-codes, group-rules) stack vertically in one scrollable detail pane
+  rather than living behind a tab switch; both are short enough to coexist without needing to be
+  hidden from each other, and they share one draft/save cycle anyway.
 - Icon reuse: registry rows and the detail header use `Ico.napr`-equivalent icon resolution
   (`assets/imgs/napravleine/<id>.png`, falling back to `hz.png`) — visually consistent with the
   Sims table's existing `напр` column.
@@ -193,6 +240,9 @@ DEF-коды (N)
 
 ## Approval
 
+**Iteration 1**: approved 2026-09-01, shipped.
+
+**Iteration 2** (group-selection rules section, this amendment):
 - [x] Reviewed by: Anton Dodonov
-- [x] Approved on: 2026-09-01
+- [x] Approved on: 2026-09-02
 - [x] Notes: Approved alongside requirements.

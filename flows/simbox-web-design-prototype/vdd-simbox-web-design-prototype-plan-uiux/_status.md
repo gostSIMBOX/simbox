@@ -10,11 +10,12 @@ REVIEW
 
 ## Last Updated
 
-2026-09-01 by Codex
+2026-09-02 by Codex
 
 ## Blockers
 
-- Product-owner answers to the three remaining open requirement decisions.
+- Product-owner answers to the four remaining open requirement decisions, including the newly
+  evidenced conflict over lifecycle-group ownership.
 
 ## Progress
 
@@ -49,6 +50,12 @@ REVIEW
   by direction algorithms `P/p/v`; it is not a product tier. The UI must keep it near routing
   policy, with verified examples only.
 - The optional comparison idea was rejected as unnecessary and removed from scope.
+- Direction routing is now traced through `extensions_dial_zones.conf` into
+  `libsCpp/asterisk-chan-svistok/src/select.c`: the route resource encodes slot, modifier,
+  limit mode, billing direction and target group; SIM selection first matches current group.
+- This conflicts with the earlier approved Command Sets amendment that assigned lifecycle-group
+  mapping to Plan. Direct legacy evidence instead splits it across operator config, dialplan and
+  SIM runtime. No editable group mapping is added to Plan until the owner resolves this conflict.
 - `nativemind-adminka` governs dense operational information and `nativemind-designsystem`
   supplies the existing product tokens. Fugue-specific 16/32 density remains authoritative for
   feature actions.
@@ -59,5 +66,5 @@ N/A — new flow. It follows the completed Command Sets workspace but does not f
 
 ## Next Actions
 
-1. Resolve the three remaining open requirement decisions.
+1. Resolve the four remaining open requirement decisions.
 2. Record explicit `requirements approved` before drafting ASCII visual states.

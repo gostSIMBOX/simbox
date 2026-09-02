@@ -1,8 +1,8 @@
 # Requirements: simbox-web-design-prototype-zones-uiux
 
-> Version: 1.0
+> Version: 2.0
 > Status: APPROVED
-> Last Updated: 2026-09-01
+> Last Updated: 2026-09-02
 
 ## Problem Statement
 
@@ -28,6 +28,30 @@ Panel/AdmButton-per-page style used elsewhere. This flow follows that same archi
 consistency, scaled down to zones' simpler shape (a zone has a name and a list of code strings —
 no commands, no response rules, no multi-section detail).
 
+## Problem Statement — Iteration 2 Addendum (2026-09-02)
+
+Iteration 1 (approved, shipped) captures only *half* of what a "направление" is in the legacy
+system: DEF-codes decide which zone a dialled number belongs to. But
+`legacy/simbox-desktop-v2014/asterisk/extensions/extensions_dial_zones.conf`'s
+`[macro-makecall-std]` then maps each zone to an **ordered, fall-through list of group-selection
+rules** — which pool of SIMs actually carries the call. Each rule is a compact selector string
+like `L1D=NS101`, parsed by `get_cr_group()` in
+`libsCpp/asterisk-chan-svistok/src/select.c` into five parts:
+
+| Part | Example | Meaning |
+|---|---|---|
+| `L<N>` | `L1` | which of the SIM's 10 limit slots (`limit[10]`, `chan_dongle.h:134`) this call is checked/counted against — the same `LIMIT0..LIMIT9` concept as the Sims table's columns |
+| `<alg>` | `D` (also `^ * d >  <`) | load-balancing tie-breaker among candidate SIMs in the group |
+| `<type>` | `=` (also `- _`) | whether that limit slot is enforced (`-`/`_` = skip) |
+| `<XX>` | `NS` | 2-letter billing/direction code — usually matches the zone's own `_naprMap` code, but is its own field (see Constraints) |
+| `<GGG>` | `101` | target SIM **group number** — the same `group` field already on every SIM |
+
+Full technical trace (line numbers, exact parsing logic) is in `_status.md`'s Iteration 2
+Context Notes — not repeated here in full to keep this document focused on what to build.
+
+This addendum adds a second editable section to each zone: an ordered, add/remove/reorder list
+of these group-selection rules, alongside (not replacing) Iteration 1's DEF-code textarea.
+
 ## User Stories
 
 ### Primary
@@ -52,6 +76,19 @@ per-row add/delete actions
 **As an** operator cleaning up
 **I want** to delete a zone that's no longer needed
 **So that** the list doesn't accumulate dead entries
+
+### Iteration 2
+
+**As an** operator troubleshooting why a direction's calls aren't going out (or are exhausting
+one SIM group instead of falling back to the next)
+**I want** to see and edit the ordered list of group-selection rules for that direction
+**So that** I can fix, reorder, or extend the fallback chain without hand-editing dialplan text
+
+**As an** operator who created a new direction (or found one whose legacy dispatch was
+commented out / never wired up — e.g. `beeline_sz`, `megafon_ru`)
+**I want** to add a first group-selection rule to it
+**So that** the direction actually has somewhere to route calls, matching Iteration 1's
+"import what's incomplete, then let the operator finish it" framing
 
 ## Acceptance Criteria
 
@@ -122,6 +159,46 @@ per-row add/delete actions
    other routing/plan-adjacent entries (proposing right after "Наборы команд" — see Open
    Questions), navigable and reachable the same way every other section is.
 
+10. **Given** a zone imported from `[macro-makecall-std]`
+    **When** the operator opens it
+    **Then** below the DEF-code textarea, a "Правила выбора группы" section lists that zone's
+    group-selection rules **in their original order** (order is meaningful — it's a fall-through
+    priority list, first rule tried first), each rule showing: limit slot (0-9), algorithm,
+    enforcement type, and SIM group number. A zone imported with no `[macro-makecall-std]` case
+    (e.g. `beeline_sz`) starts with an empty rule list — same "incomplete on purpose" framing as
+    Iteration 1's zero-code zones.
+
+11. **Given** the group-rules section
+    **When** the operator clicks "+ добавить правило"
+    **Then** a new rule is appended to the end of the list, in the zone's draft (same
+    dirty/Save/Cancel mechanism as the DEF-code textarea — editing rules and editing codes share
+    one draft per zone, one Save commits both together), with sensible defaults (limit slot 0,
+    algorithm `D`, type `=`, an empty/prompted group number), and becomes immediately editable.
+
+12. **Given** an existing rule
+    **When** the operator changes its limit slot, algorithm, type, or group number
+    **Then** the change updates that field in the draft only — no need to re-enter the whole
+    rule (unlike the DEF-code textarea's whole-list replace, since rules are structured
+    multi-field records, not opaque strings) — and the draft bar appears/stays visible exactly
+    as it does for a DEF-code edit.
+
+13. **Given** two or more rules
+    **When** the operator uses move-up/move-down (matching the column-reorder pattern already
+    established in fix2's `ColumnsEditor`, `moveColumn`) on a rule
+    **Then** its position in the fallback order changes in the draft accordingly.
+
+14. **Given** a rule
+    **When** the operator removes it
+    **Then** it's removed from the draft immediately (rules are lower-stakes than whole zones —
+    no confirmation dialog needed, unlike zone deletion in Acceptance Criteria #7 — and removal
+    is still just a draft edit, undoable via the same "Отмена" that reverts DEF-code edits).
+
+15. **Given** the zone's billing/direction code (the `<XX>` part — one per zone, not one per
+    rule, since every rule under one zone in the legacy data shares it)
+    **When** the operator edits zone metadata (Acceptance Criteria #6's dialog)
+    **Then** a "Код направления (2 буквы)" field is editable there, defaulting to the matching
+    `_naprMap` code when the zone has one, blank/operator-supplied otherwise.
+
 ### Should Have
 
 - Reuse `napravleine/*.ico` icons per zone in both the registry-pane row and the detail header,
@@ -148,6 +225,15 @@ per-row add/delete actions
   as the canonical identity for each zone (they're the same directions, see Acceptance Criteria
   #2), and *adds* the DEF-code routing detail underneath, but doesn't modify that lookup, the
   Sims table, or how a SIM's own direction is displayed.
+- **(Iteration 2)** No import of the special-traffic rule sets — `[macro-makecall-pre]`
+  (prepaid surcharge), `[macro-makecall-pos]` (postpaid), `[macro-makecall-sou]` ("source"/test
+  calls), `[macro-makecall-mag]` ("mayak"/beacon), `[macro-makecall-nav]` (blocked subscriber).
+  Only `[macro-makecall-std]` (default/normal traffic) is imported. The others are a separate,
+  deeper layer, noted in `_status.md` for a possible future iteration, not built here.
+- **(Iteration 2)** No validation that a referenced SIM group number actually exists among real
+  SIMs, no live re-ranking/simulation of which SIM a rule would currently select, no enforcement
+  that the `<alg>`/`<type>` characters are one of the "known" letters (freeform, same spirit as
+  DEF-codes' "no syntax validation beyond non-empty").
 
 ## Constraints
 
@@ -185,6 +271,24 @@ per-row add/delete actions
   consistent with the precedent and avoids dangling references if anything elsewhere ever keys
   off a zone id.
 
+## Open Questions — Iteration 2
+
+- [ ] The `<alg>` letters (`D d ^ * > <`) drive a genuinely intricate ranking algorithm deeper in
+  `select.c` (PRO-traffic gating, duration-based tie-breaking, etc.) that wasn't fully traced.
+  Proposing: show the raw letter as both the dropdown value and its label (no attempted
+  plain-language gloss, to avoid asserting a meaning I'm not fully certain of) — confirm this is
+  acceptable, or provide the intended labels if you know them.
+- [ ] `<type>` (`= - _`) similarly — proposing raw-letter dropdown, same reasoning.
+
+## References — Iteration 2 additions
+
+- `legacy/simbox-desktop-v2014/asterisk/extensions/extensions_dial_zones.conf` (421 lines) —
+  `[macro-makecall-std]` and siblings; source of truth for the group-selection rule content.
+- `libsCpp/asterisk-chan-svistok/src/select.c` — `get_cr_group()` (~line 148), the selector
+  string parser; source of truth for the selector grammar.
+- `libsCpp/asterisk-chan-svistok/src/chan_dongle.h` — `limit[10]`/`alg[10]`/`nodiff[10]` (~line
+  134), confirms the 10 limit slots.
+
 ## References
 
 - `legacy/simbox-desktop-v2014/asterisk/extensions/zones/*.conf` (25 files, ~9,013 lines) — raw
@@ -203,8 +307,10 @@ per-row add/delete actions
 
 ## Approval
 
+**Iteration 1** (Acceptance Criteria #1-9): approved 2026-09-01, shipped.
+
+**Iteration 2** (Acceptance Criteria #10-15, this amendment):
 - [x] Reviewed by: Anton Dodonov
-- [x] Approved on: 2026-09-01
-- [x] Notes: Corrected mid-review — zones ARE directions (напр column concept), not a separate
-  thing; see Acceptance Criteria #2. Three open questions proceed on stated defaults (sidebar
-  slot after Наборы команд; zone count confirmed programmatically; id immutable after creation).
+- [x] Approved on: 2026-09-02
+- [x] Notes: Both open questions (alg/type raw-letter dropdowns, no invented glosses) proceed
+  as proposed.

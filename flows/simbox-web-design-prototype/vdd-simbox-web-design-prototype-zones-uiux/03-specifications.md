@@ -1,10 +1,201 @@
 # Specifications: simbox-web-design-prototype-zones-uiux
 
-> Version: 1.0
-> Status: DRAFT
-> Last Updated: 2026-09-01
+> Version: 2.0
+> Status: DRAFT (Iteration 2 amendment — Iteration 1 shipped and approved 2026-09-01)
+> Last Updated: 2026-09-02
 > Requirements: [01-requirements.md](01-requirements.md)
 > Visual: [02-visual.md](02-visual.md)
+
+## Iteration 2 Amendment: group-selection rules
+
+Adds `GroupRule` (limit slot, algorithm, type, group number) and a zone-level `billingCode` to
+the already-shipped `Zone` model; extends `ZoneController` with rule mutation methods that
+participate in the *same* draft as `updateCodesText`; extends the seed generator to also parse
+`extensions_dial_zones.conf`'s `[macro-makecall-std]`; adds a `GroupRulesEditor` widget below
+`ZoneCodeEditor` in the detail pane. No repository/architecture changes — `create`/`replace`/
+`delete` still operate on a whole `Zone`, now with two more fields.
+
+### Amended Data Models
+
+```dart
+// lib/features/zones/models.dart — additions
+class GroupRule {
+  final int limitSlot;   // 0-9, indexes the SIM's limit[10] (chan_dongle.h:134)
+  final String alg;      // single char: D d ^ * > < (raw, per Open Questions)
+  final String type;     // single char: = - _ (raw, per Open Questions)
+  final String group;    // SIM group number, kept as String (matches free-text entry,
+                          // avoids int-parsing edge cases on partial input while typing)
+
+  const GroupRule({
+    required this.limitSlot,
+    required this.alg,
+    required this.type,
+    required this.group,
+  });
+
+  GroupRule copyWith({int? limitSlot, String? alg, String? type, String? group}) => GroupRule(
+        limitSlot: limitSlot ?? this.limitSlot,
+        alg: alg ?? this.alg,
+        type: type ?? this.type,
+        group: group ?? this.group,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      other is GroupRule &&
+      limitSlot == other.limitSlot && alg == other.alg && type == other.type && group == other.group;
+  @override
+  int get hashCode => Object.hash(limitSlot, alg, type, group);
+}
+
+// Zone gains two fields (existing id/name/region/icon/defCodes unchanged):
+class Zone {
+  // ...existing fields...
+  final String? billingCode;       // 2-letter zone-level code, e.g. 'NS' — Acceptance Criteria #15
+  final List<GroupRule> groupRules; // ordered — fallback priority, first tried first
+
+  const Zone({
+    // ...existing required params...
+    this.billingCode,
+    this.groupRules = const [],
+  });
+
+  // copyWith/==/hashCode extended to include billingCode + groupRules
+  // (list equality for groupRules via the same _listEquals helper already in this file)
+}
+```
+
+Verified against the legacy data before finalizing this shape: every rule under one zone in
+`[macro-makecall-std]` uses the same 2-letter code (spot-checked `meg_spb`→`NS`×4,
+`bee_spb`→`BS`×4; will be verified programmatically for *all* 18 zones during seed generation,
+not just these two — if a zone's rules ever disagree on the code, the generator takes the first
+rule's code and flags a warning rather than guessing, per the Edge Cases table below).
+
+### Amended Interfaces
+
+```dart
+// lib/features/zones/controller.dart — new methods, all draft-first (mirrors updateCodesText)
+class ZoneController extends ChangeNotifier {
+  // ...existing members unchanged...
+
+  void addGroupRule() {
+    final current = selected;
+    if (current == null) return;
+    draft ??= ZoneDraft(current);
+    draft!.working = draft!.working.copyWith(groupRules: [
+      ...draft!.working.groupRules,
+      const GroupRule(limitSlot: 0, alg: 'D', type: '=', group: ''),
+    ]);
+    notifyListeners();
+  }
+
+  void updateGroupRule(int index, {int? limitSlot, String? alg, String? type, String? group}) {
+    final current = selected;
+    if (current == null) return;
+    draft ??= ZoneDraft(current);
+    final rules = List<GroupRule>.of(draft!.working.groupRules);
+    if (index < 0 || index >= rules.length) return;
+    rules[index] = rules[index].copyWith(limitSlot: limitSlot, alg: alg, type: type, group: group);
+    draft!.working = draft!.working.copyWith(groupRules: rules);
+    notifyListeners();
+  }
+
+  void moveGroupRule(int index, int direction) {
+    final current = selected;
+    if (current == null) return;
+    draft ??= ZoneDraft(current);
+    final rules = List<GroupRule>.of(draft!.working.groupRules);
+    final n = index + direction;
+    if (index < 0 || index >= rules.length || n < 0 || n >= rules.length) return;
+    final r = rules.removeAt(index);
+    rules.insert(n, r);
+    draft!.working = draft!.working.copyWith(groupRules: rules);
+    notifyListeners();
+  }
+
+  void removeGroupRule(int index) {
+    final current = selected;
+    if (current == null) return;
+    draft ??= ZoneDraft(current);
+    final rules = List<GroupRule>.of(draft!.working.groupRules)..removeAt(index);
+    draft!.working = draft!.working.copyWith(groupRules: rules);
+    notifyListeners();
+  }
+}
+```
+
+`renameZone` (existing, Acceptance Criteria #6) gains a `billingCode` parameter per Acceptance
+Criteria #15 — it's zone metadata, edited alongside name/region in the same dialog, applied
+immediately via `repository.replace` (not draft-gated) exactly like today's name/region edits,
+**not** part of the DEF-codes/group-rules draft — metadata edits and content edits use two
+different commit paths already (this was true in Iteration 1 too: `renameZone` calls
+`repository.replace` directly, no draft involved).
+
+```dart
+// lib/features/zones/zone_dialogs.dart — showEditZoneMetadataDialog gains a billing-code field
+// calling controller.renameZone(zone.id, name, region, billingCode)
+```
+
+### New Widget
+
+```dart
+// lib/features/zones/group_rules_editor.dart (new file)
+class GroupRulesEditor extends StatelessWidget {
+  final ZoneController controller;
+  const GroupRulesEditor({super.key, required this.controller});
+  // Renders: "Правила выбора группы (N)" header + "+ добавить правило" button,
+  // then one row per rule (limitSlot dropdown 0-9, alg dropdown, type dropdown,
+  // group TextField, move-up/move-down/delete icon buttons), empty-state message
+  // when groupRules is empty (Requirements Acceptance Criteria #10's zero-rule case).
+}
+```
+
+Reuses the same row-chip visual language as `lib/widgets/columns_editor.dart`'s `_ColumnChip`
+(move-left/move-right icon buttons) — adapted here to move-up/move-down since rules stack
+vertically, not horizontally like column chips.
+
+### Amended Behavior Specifications
+
+#### Happy Path (add/edit/reorder/remove a rule)
+
+1. Operator selects "МегаФон СПб" → `GroupRulesEditor` shows its 4 imported rules in order.
+2. Clicks "+ добавить правило" → `addGroupRule()` → draft created (if not already), a 5th rule
+   appended with defaults (slot 0, alg `D`, type `=`, empty group) → draft bar appears (shared
+   with DEF-codes' draft bar — same `controller.isDirty`).
+3. Types "999" into the new rule's group field → `updateGroupRule(4, group: '999')` → draft
+   updates, count/rows re-render.
+4. Clicks move-up on rule 5 → `moveGroupRule(4, -1)` → rules 4 and 5 swap.
+5. Clicks delete on rule 3 → `removeGroupRule(2)` → rule removed, no confirmation (Acceptance
+   Criteria #14).
+6. Clicks "Сохранить" (the *same* draft bar DEF-codes uses) → `repository.replace` persists
+   both the edited `defCodes` *and* `groupRules` together in one call, since both live on the
+   same `draft.working` `Zone` object.
+
+### Edge Cases — Iteration 2
+
+| Case | Trigger | Expected Behavior |
+|---|---|---|
+| Zone has no `[macro-makecall-std]` case at all (e.g. `beeline_sz`) | Seed generation | `groupRules: const []`; `GroupRulesEditor` shows the empty-state message (02-visual.md) |
+| Zone's dispatch `GotoIf` is commented out but the rule block still exists (e.g. `meg_ru`) | Seed generation | Rules are still imported (the block is real data, just unreachable in the legacy dispatcher) — this tool doesn't try to determine live-reachability, only "is there a rule block for this zone label" |
+| A zone's rules disagree on the 2-letter billing code | Seed generation (not expected per spot-checks, but not proven for all 18) | Generator takes the *first* rule's code as `billingCode` and prints a warning to stdout — does not fail the build; a human can review the printed warnings |
+| Operator adds a rule, then cancels the draft | Click "Отмена" | Whole draft discarded (both any DEF-code edits *and* the added/edited rules) — single unified undo, matching Requirements #12's "same Отмена" wording |
+| Operator deletes a zone that still has group rules | Delete flow (Acceptance Criteria #7, unchanged) | Rules are just a field on the `Zone` object — deleted along with everything else, no special handling needed |
+| Move-up on the first rule / move-down on the last | Click a disabled-looking arrow | Button is disabled (matches `columns_editor.dart`'s `_ColumnChip` pattern: `canMoveLeft`/`canMoveRight` booleans control `onTap: enabled ? onTap : null`) |
+
+### Amended Testing Strategy
+
+Same manual-verification approach as Iteration 1 (`flutter analyze` + `flutter build web` +
+driven Chrome session). Add to the checklist:
+
+- [ ] All 18 zones' imported rules match `extensions_dial_zones.conf` exactly (spot-check
+      `megafon_spb`'s 4 rules and `beeline_sz`'s 0 rules against the source file).
+- [ ] Add/edit/reorder/remove a rule; confirm the draft bar is shared with DEF-code edits (one
+      Save commits both, one Cancel discards both).
+- [ ] Edit a zone's billing code via the metadata dialog; confirm it applies immediately (not
+      gated behind the content draft).
+- [ ] Move-up/move-down disable correctly at the list ends.
+
+---
 
 ## Overview
 
@@ -329,6 +520,10 @@ Not applicable — single prototype app, in-memory seed data.
 
 ## Approval
 
+**Iteration 1**: approved 2026-09-01 (approved together with 04-plan.md in the same message;
+checkbox retroactively filled in here — implementation shipped and verified regardless).
+
+**Iteration 2** (this amendment):
 - [ ] Reviewed by: Anton Dodonov
 - [ ] Approved on:
 - [ ] Notes:

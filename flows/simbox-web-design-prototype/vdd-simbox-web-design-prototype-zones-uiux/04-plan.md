@@ -1,11 +1,83 @@
 # Implementation Plan: simbox-web-design-prototype-zones-uiux
 
-> Version: 1.0
-> Status: DRAFT
-> Last Updated: 2026-09-01
+> Version: 2.0
+> Status: DRAFT (Iteration 2 amendment — Iteration 1 shipped and approved 2026-09-01)
+> Last Updated: 2026-09-02
 > Specifications: [03-specifications.md](03-specifications.md)
 
-## Summary
+## Iteration 2 Amendment: group-selection rules
+
+Three new tasks, appended after Iteration 1's Phase 5 (which stays as the historical record
+below): (6.1) extend the seed generator to also parse `extensions_dial_zones.conf` and re-emit
+`seed.dart` with `groupRules`/`billingCode` populated, (6.2) extend `Zone`/`ZoneController`/
+`zone_dialogs.dart` for the new fields and draft-mutation methods, (6.3) build
+`GroupRulesEditor` and wire it into `workspace.dart`'s detail pane, then (6.4) verify.
+
+### Task 6.1: Extend the seed generator, re-emit `seed.dart`
+- **Description**: Extend the Task-1.1 generator script to also parse
+  `legacy/simbox-desktop-v2014/asterisk/extensions/extensions_dial_zones.conf`'s
+  `[macro-makecall-std]` section: for each `exten => <label>,n,Macro(makecall-*,
+  <selector>,...)` line, map `<label>` through the *same* abbreviated→canonical merge dict
+  already used for DEF-codes (`meg_spb`→`megafon_spb`, etc.) and parse `<selector>` per
+  `get_cr_group()`'s byte grammar (03-specifications.md's Amended Data Models table) into a
+  `GroupRule`. Collect one ordered list per canonical zone id. Derive each zone's `billingCode`
+  from its first rule's `<XX>` (warn to stdout, don't fail, if a zone's rules disagree — Edge
+  Cases). Re-emit `lib/features/zones/seed.dart` with `groupRules:`/`billingCode:` populated
+  alongside the existing `defCodes:`.
+- **Files**: `lib/features/zones/seed.dart` - Modify (regenerated)
+- **Dependencies**: None (extends the existing, already-verified generator)
+- **Verification**: Re-run the printed summary check (per-zone rule counts) against
+  `extensions_dial_zones.conf` read directly — spot-check `megafon_spb` (4 rules, code `NS`),
+  `beeline_sz` (0 rules, no `billingCode` — never wired into the legacy dispatcher).
+- **Complexity**: Medium (the label→canonical-id mapping must reuse Task 1.1's exact merge
+  rules, not redefine them slightly differently).
+
+### Task 6.2: `GroupRule`, `Zone` extension, `ZoneController` mutation methods, dialog field
+- **Description**: Add `GroupRule` to `models.dart`; extend `Zone` with `billingCode`/
+  `groupRules` (constructor, `copyWith`, `==`, `hashCode`); add `addGroupRule`/
+  `updateGroupRule`/`moveGroupRule`/`removeGroupRule` to `ZoneController` (all draft-first,
+  mirroring `updateCodesText`); extend `renameZone`'s signature with a `billingCode` param;
+  add a "Код направления" field to `showEditZoneMetadataDialog` in `zone_dialogs.dart`.
+- **Files**: `lib/features/zones/models.dart` - Modify, `lib/features/zones/controller.dart` -
+  Modify, `lib/features/zones/zone_dialogs.dart` - Modify
+- **Dependencies**: Task 6.1 (seed's shape must match the model before it compiles)
+- **Verification**: Compiles; deferred functional check to Task 6.4.
+- **Complexity**: Low-Medium (mechanical, same shape as Iteration 1's equivalent methods).
+
+### Task 6.3: `GroupRulesEditor`, wire into the detail pane
+- **Description**: New widget per 03-specifications.md — header + add button, one row per rule
+  (limit-slot dropdown 0-9, alg dropdown, type dropdown, group `TextField`, move-up/move-down/
+  delete icon buttons reusing `columns_editor.dart`'s `_ColumnChip` move-button visual pattern),
+  empty-state message when `groupRules` is empty. Insert into `workspace.dart`'s `_DetailPane`
+  below `ZoneCodeEditor`, inside the same scrollable column (both sections stack vertically,
+  02-visual.md).
+- **Files**: `lib/features/zones/group_rules_editor.dart` - Create,
+  `lib/features/zones/workspace.dart` - Modify (`_DetailPane` gains the new section)
+- **Dependencies**: Task 6.2
+- **Verification**: Full manual pass per 03-specifications.md's Amended Testing Strategy.
+- **Complexity**: Medium (structured multi-field rows + move/delete buttons — more UI surface
+  than Task 6.2, but no new interaction *patterns*, all reused from `columns_editor.dart`).
+
+### Task 6.4: Verification pass
+- **Description**: `flutter analyze` (0 new errors); `flutter build web`; drive the built app in
+  Chrome through 03-specifications.md's Amended Testing Strategy checklist (rule import
+  accuracy, add/edit/reorder/remove, shared draft bar, billing-code metadata edit, move-button
+  disable-at-ends).
+- **Files**: None
+- **Dependencies**: Task 6.3
+- **Complexity**: Low-Medium (breadth, not difficulty — same pattern as Iteration 1's Task 5.1).
+
+### Iteration 2 Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| Seed regeneration accidentally changes Iteration 1's already-verified `defCodes` output | Low | High | Generator's DEF-code parsing path is untouched by this amendment; diff the regenerated `seed.dart`'s `defCodes` sections against the pre-amendment version before considering Task 6.1 done |
+| Label→canonical-id mapping drifts from Task 1.1's version (e.g. re-typed instead of reused) | Medium | Medium | Reuse the exact same Python dict/constant from Task 1.1's script, don't re-derive |
+| Shared draft (codes + rules together) surprises the operator — e.g. they only meant to edit codes, accidentally left a half-entered rule, and Save commits both | Low | Low | Matches the explicit Requirements decision (Acceptance Criteria #11-14) — one zone, one draft, by design, not an oversight |
+
+---
+
+## Summary (Iteration 1, original plan)
 
 Five phases: (1) generate the verified seed data from the 25 legacy files, (2) build the
 non-UI feature layer (models/repository/controller), (3) build the UI layer mirroring
@@ -205,6 +277,9 @@ After Phase 1, Phase 2, Phase 3, and Phase 4:
 
 ## Approval
 
+**Iteration 1**: approved 2026-09-01, shipped and verified.
+
+**Iteration 2** (Tasks 6.1-6.4, this amendment):
 - [ ] Reviewed by: Anton Dodonov
 - [ ] Approved on:
 - [ ] Notes:
