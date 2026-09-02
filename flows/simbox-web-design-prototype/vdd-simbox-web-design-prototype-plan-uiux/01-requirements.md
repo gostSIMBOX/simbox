@@ -2,7 +2,7 @@
 
 > Version: 1.0  
 > Status: REVIEW  
-> Last Updated: 2026-09-01
+> Last Updated: 2026-09-02
 
 ## Problem Statement
 
@@ -215,12 +215,66 @@ complete policy editing does not require one.
 - [ ] May the command-set association of an existing plan be edited, or should changing ownership
   require Clone into the target command set?
 
+## Legacy Addition 1.1 — DEF direction zones
+
+The product owner's term **DEF directions** refers to the number-prefix classifiers in
+`asterisk/extensions/zones`, not to Plan fields `alg.1..4` themselves.
+
+The verified legacy chain is:
+
+```text
+called number
+  -> Asterisk pattern in zones/*.conf
+  -> named zone in Macro(makecall, <zone>, ...), stored as naprstr
+  -> zone/mode route in extensions_dial_zones.conf
+  -> resource descriptor such as L1D=NS101 or L3D_BS210
+  -> Plan/SIM policy slot selected by the L number
+```
+
+- `zones/*.conf` owns DEF/prefix masks and their named routing zones, for example `tele2_spb`,
+  `meg_spb`, `bee_msk`, `all_ua` and `rostel_spb_gor`.
+- The already approved Zones VDD flow has normalized all 25 source files into 18 canonical zones
+  containing 6,073 DEF patterns. Abbreviated/full operator aliases such as `bee_msk` and
+  `beeline_msk` are merged only for the same operator and region; canonical IDs follow the live
+  Zones registry (`beeline_*`, `megafon_*`, and so on).
+- `extensions_dial_zones.conf` turns the named zone into one or more resource descriptors. The
+  descriptor parser in `svistok-aa/select.c` reads the `L` digit as `limitnum`, the next character
+  as the selection algorithm/modifier and the two-letter segment as `billing_direction`.
+- Plan owns reusable policy for the numbered slots (`alg`, `nodiff`, `limit_max`, `limit_hard`);
+  it does not own or edit thousands of destination-prefix masks.
+- Slot 0 and the partially propagated slot 5 occur in runtime/copy paths but are not complete
+  editable Plan families in `plan.php`. They require explicit compatibility treatment and must not
+  be silently presented as ordinary Plan directions 1–4.
+
+For this Plan iteration, the **Directions** section should therefore show each Plan policy slot
+with read-only routing context derived from the zone-to-resource map (zone names and billing
+direction codes that can reach the slot). It must consume the shared live Zones registry created
+by `vdd-simbox-web-design-prototype-zones-uiux`, not copy a second zone catalogue into Plans.
+Editing zone names and DEF masks stays on that separate **Направления** screen; raw Asterisk
+configuration remains outside Plan CRUD.
+
+Additional acceptance criteria:
+
+16. UI labels and help distinguish a DEF zone, a billing direction code and a Plan limit slot;
+    these concepts may not be collapsed into one field called "direction".
+17. Each Plan slot shows a compact read-only summary of the canonical zones/routes that can select
+    it, with details available on demand; the Plan form never renders all 6,073 masks inline.
+18. Plan zone references use the same 18-record live registry as the approved Zones feature; alias
+    normalization is not reimplemented in the Plans feature.
+19. The requirements/specification audit records the compatibility disposition of slots 0 and 5
+    before implementation.
+
 ## References
 
 - `legacy/simbox-desktop-v2014/www/simbox/plan.php`
 - `legacy/simbox-desktop-v2014/actions/set_plan_set.sh`
 - `legacy/simbox-desktop-v2014/actions/set_plan_copy.sh`
 - `legacy/simbox-desktop-v2014/system/get_args_plan_nabor.sh`
+- `legacy/simbox-desktop-v2014/asterisk/extensions/extensions_zones.conf`
+- `legacy/simbox-desktop-v2014/asterisk/extensions/extensions_dial_zones.conf`
+- `legacy/simbox-desktop-v2014/asterisk/extensions/zones/`
+- `legacy/simbox-desktop-v2014/svistok-aa/select.c`
+- `flows/simbox-web-design-prototype/vdd-simbox-web-design-prototype-zones-uiux/`
 - `legacy/simbox-desktop-v2014/var/simbox/plan09042014.tar.gz`
 - `design/simbox-web-design-prototype-v2026/lib/pages/plan_page.dart`
 - `design/simbox-design-prototype-v2026-dc/index.html`
