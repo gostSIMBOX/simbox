@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-PLAN
+IMPLEMENTATION
 
 ## Phase Status
 
@@ -14,8 +14,9 @@ REVIEW
 
 ## Blockers
 
-- Waiting on user approval of the Iteration 2 amendments to 03-specifications.md and
-  04-plan.md before starting Implementation. (Requirements + Visual approved 2026-09-02.)
+- Waiting on user review/sign-off of the Iteration 2 implementation (see
+  05-implementation-log.md's second session). No git commit/push made — same nested-repo
+  reminder as always.
 
 ## Progress
 
@@ -30,9 +31,9 @@ REVIEW
 - [x] Specifications amended
 - [ ] Specifications approved
 - [x] Plan amended
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
+- [x] Plan approved
+- [x] Implementation started
+- [x] Implementation complete (all 4 tasks done, manually verified in Chrome; see log)
 - [ ] Documentation drafted (optional phase, not started — not requested)
 - [ ] Documentation approved
 

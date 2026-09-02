@@ -351,3 +351,33 @@ Additional acceptance criteria:
 - [ ] Requirements approved by product owner
 - [ ] Approved on: 2026-09-01
 - [ ] Notes: pending answers to the open questions above
+
+## Legacy Addition 1.3 — MAY, MON and MSM Plan policy semantics (2026-09-02)
+
+This source audit resolves the earlier instruction not to invent commercial meanings:
+
+- `may_limit` limits counted attempts to execute the command set's operator callback-request USSD.
+- `mon_limit` limits counted attempts to execute the distinct, commercially undocumented MON
+  operator request. Legacy automatic MON triggering is disabled.
+- `msm_limit` limits SMS substitutions for MAY; MSM means a callback-request SMS behaviour, not
+  Multiple-SIM. It is additionally constrained by `smsout_soft` and increments `smsout_sended`.
+- these are Plan-configured policies copied to SIM settings; `*_sended` values are per-SIM runtime
+  counters.
+
+The legacy executor increments the counter before command execution and does not validate exit
+status or operator response. Plan and SIM UI must therefore say **attempts / limit**, never
+“successfully sent”. The reset cadence is command-set dependent and inconsistent, so a generic
+“daily limit” label is prohibited unless the selected command set proves a daily reset for that
+counter.
+
+Plan detail must expose the dependency `MSM fallback = msm_limit available AND outgoing SMS soft
+limit available`. The seed may preserve the raw values, but the editor should warn when an MSM
+limit is ineffective because `smsout_soft` is zero. It must also warn when the selected command set
+has no active MAY/MON implementation.
+
+The SIM/Plan column manifests must include MSM without conflating it with the unrelated IM
+relationship. Recommended labels are `MAY attempts`, `MON attempts`, `Callback SMS attempts`, with
+raw aliases `may_sended`, `mon_sended`, `msm_sended` shown in technical detail.
+
+Evidence: `ai/sms/send_maymon.php`, `nabor/*/commands/send_may.sh`,
+`nabor/*/commands/send_mon.sh`, the command-set reset scripts and `www/simbox/sim.php`.

@@ -1,7 +1,7 @@
 # Implementation Plan: simbox-web-design-prototype-zones-uiux
 
 > Version: 2.0
-> Status: DRAFT (Iteration 2 amendment — Iteration 1 shipped and approved 2026-09-01)
+> Status: APPROVED
 > Last Updated: 2026-09-02
 > Specifications: [03-specifications.md](03-specifications.md)
 
@@ -280,6 +280,6 @@ After Phase 1, Phase 2, Phase 3, and Phase 4:
 **Iteration 1**: approved 2026-09-01, shipped and verified.
 
 **Iteration 2** (Tasks 6.1-6.4, this amendment):
-- [ ] Reviewed by: Anton Dodonov
-- [ ] Approved on:
-- [ ] Notes:
+- [x] Reviewed by: Anton Dodonov
+- [x] Approved on: 2026-09-02
+- [x] Notes:

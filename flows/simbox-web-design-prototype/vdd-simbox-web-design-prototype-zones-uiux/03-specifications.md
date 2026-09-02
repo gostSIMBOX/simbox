@@ -1,7 +1,7 @@
 # Specifications: simbox-web-design-prototype-zones-uiux
 
 > Version: 2.0
-> Status: DRAFT (Iteration 2 amendment — Iteration 1 shipped and approved 2026-09-01)
+> Status: APPROVED
 > Last Updated: 2026-09-02
 > Requirements: [01-requirements.md](01-requirements.md)
 > Visual: [02-visual.md](02-visual.md)
@@ -524,6 +524,6 @@ Not applicable — single prototype app, in-memory seed data.
 checkbox retroactively filled in here — implementation shipped and verified regardless).
 
 **Iteration 2** (this amendment):
-- [ ] Reviewed by: Anton Dodonov
-- [ ] Approved on:
-- [ ] Notes:
+- [x] Reviewed by: Anton Dodonov
+- [x] Approved on: 2026-09-02
+- [x] Notes:

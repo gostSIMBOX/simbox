@@ -688,3 +688,29 @@ remain intentionally deferred to a later architecture decision.
 - [x] Reviewed by: Anton Dodonov
 - [x] Approved on: 2026-09-01
 - [x] Notes: approved with `approved`; Specification 2.0 is the implementation authority.
+
+## Legacy Addition 2.1 — MAY/MON command capability audit (2026-09-02)
+
+This additive audit refines, but does not broaden, the approved universal command editor:
+
+- `send_may` is an operator callback-request USSD command, separate from call `spec=MAY`.
+- `send_mon` is a distinct operator request; its commercial meaning is not documented by source,
+  and the repository does not prove a paid-callback workflow.
+- MSM is not a command-set command. It is the system-level regular-SMS fallback selected internally
+  for MAY, using randomized callback text and Plan/SIM quotas.
+
+The seed/audit model must classify command capability, not infer it from filenames alone:
+
+| Set | MAY | MON |
+|---|---|---|
+| `beeline_spb` | active `*144*<number>#` | active `*143*<number>#` |
+| `megafon_spb` | active `*144*<number>#` | active `*143*<number>#` |
+| `life` | active `*120*2*<number>#` | no-op/commented; copied config defect |
+| `velcom` | active `*131*<number>#` | no-op/commented; copied config defect |
+| `tele2_spb` | no-op/commented intended `*118*...#` | no-op/commented intended `*123*...#`; copied config defect |
+| other seeded sets | unavailable | unavailable |
+
+The editor must preserve inactive artifacts for audit, while user-facing availability distinguishes
+`active`, `inactive/no-op` and `unavailable`. It must not offer MSM as an editable operator command.
+Plan limits do not change capability classification. Runtime execution/correlation remains outside
+this prototype, as already specified.
