@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nativemind-1-12-design-system-c0084cf1-7567-4ad2-b553-8405a2966c3c/tokens/fonts.css">
+<style>
+body { margin: 0; background: #F8F9FA; }
+a { color: #005BEA; text-decoration: none; }
+a:hover { color: #00C6FB; }
+</style>
+</helmet>
+
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+<section data-label="Титул" data-screen-label="01" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:96px 110px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+  <div style="position:absolute;top:0;left:0;width:100%;height:10px;background:linear-gradient(90deg,#00C6FB 0%,#005BEA 100%)"></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div style="font-size:19px;font-weight:600;letter-spacing:.18em;color:#005BEA">ПРОДУКТ И БИЗНЕС-МОДЕЛЬ · 2026</div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:34px;height:38px;opacity:.75">
+      <div style="font-size:19px;font-weight:600;letter-spacing:.16em;color:#303F49">NATIVEMIND</div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:34px;max-width:1450px">
+    <div style="font-size:150px;font-weight:700;letter-spacing:-0.035em;line-height:1">gostSIMBOX</div>
+    <div style="font-size:42px;font-weight:400;line-height:1.22;color:rgba(48,63,73,0.72);max-width:1250px;text-wrap:pretty">Программно-аппаратный комплекс по совмещению GSM/LTE с SIP/VOIP</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:80px">
+    <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.68);max-width:1150px">Устройство и приложение вместо дорогого GSM-шлюза: звонки и SMS по домашнему тарифу из любой страны.</div>
+    <div style="font-size:24px;font-weight:600;color:#B6B6B6">RU</div>
+  </div>
+</section>
+
+<section data-label="Продукт" data-screen-label="02" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:48px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">02</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Продукт — программно-аппаратный комплекс по совмещению GSM/LTE с SIP/VOIP</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:22px;justify-content:center;border-top:5px solid #00C6FB">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01</div>
+      <div style="font-size:30px;font-weight:600">Приложение</div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.70)">Контроль СИМ-карт, пополнение баланса, перепрошивка устройства и т.д.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:22px;justify-content:center;border-top:5px solid #22A8F4">
+      <div style="font-size:20px;font-weight:700;color:#22A8F4">02</div>
+      <div style="font-size:30px;font-weight:600">Устройство</div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.70)">Адаптер-коннектор для работы с голосовой линией в телефонах Android</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:22px;justify-content:center;border-top:5px solid #0F86EF">
+      <div style="font-size:20px;font-weight:700;color:#0F86EF">03</div>
+      <div style="font-size:30px;font-weight:600">Программная часть</div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.70)">Open source</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:22px;justify-content:center;border-top:5px solid #005BEA">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">04</div>
+      <div style="font-size:30px;font-weight:600">Серверная инфраструктура</div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.70)">Свои серверы, аренда в датацентрах</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Устройство" data-screen-label="03" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">03</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Устройство — адаптер для работы с голосовой линией в телефонах Android</h2>
+  <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:36px;flex:1;min-height:0">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:32px;display:flex;overflow:hidden">
+      <img src="assets/jack.png" alt="Адаптер gostSIMBOX" style="width:100%;height:100%;object-fit:contain;border-radius:8px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">ЧТО ЭТО ДАЁТ</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.82)">Работа с голосовой линией без rooting и перепрошивки телефона: пользователь подключает адаптер к уже имеющемуся Android-устройству.</div>
+      <div style="height:1px;background:rgba(156,178,194,0.35)"></div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.82)">Привычный интерфейс собственного телефона сохраняется — переучиваться не нужно.</div>
+      <div style="align-self:flex-start;background:rgba(0,91,234,0.06);color:#005BEA;border-radius:999px;padding:14px 26px;font-size:21px;font-weight:600">Планируется патент на устройство</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Техническое описание" data-screen-label="04" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">04</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Подробное техническое описание</h2>
+  <div style="background:linear-gradient(135deg,#00C6FB 0%,#005BEA 100%);border-radius:20px;padding:80px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:32px;color:#FFFFFF">
+    <div style="font-size:19px;font-weight:600;letter-spacing:.16em;color:rgba(255,255,255,0.85)">ОТДЕЛЬНАЯ ПРЕЗЕНТАЦИЯ</div>
+    <div style="font-size:46px;font-weight:600;line-height:1.2;max-width:1250px;text-wrap:pretty">Архитектура, устройство драйверов, SIP-мост и роутинг вынесены в техническую презентацию</div>
+    <div style="font-size:26px;line-height:1.45;color:rgba(255,255,255,0.86)">Ссылка на другую презентацию — вставить перед отправкой.</div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Актуальность" data-screen-label="05" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">05</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Актуальность</h2>
+  <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:28px;line-height:1.45;color:rgba(48,63,73,0.86);text-wrap:pretty">Идея приложения пришла из прошлого — стартап существовал ранее вплоть до 2014 года, оказывая услуги по маршрутизации телефонного и СМС трафика мобильным операторам через компанию AltComTech, Лондон.</div>
+      <div style="font-size:28px;line-height:1.45;color:rgba(48,63,73,0.86);text-wrap:pretty">С приходом мессенджеров и аудио/видео звонков потребность в технологии стала снижаться, однако в нынешнем состоянии мирового сообщества вновь прослеживается тенденция к возвращению к традиционной мобильной связи.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:28px">
+      <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center">
+        <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">КТО СТРАДАЕТ В ПЕРВУЮ ОЧЕРЕДЬ</div>
+        <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.82)">Люди, оказавшиеся по тем или иным причинам за границей — отпуск, удалённая работа и digital nomads, стажировка, трудовые мигранты — при нахождении в странах с «закрытой» сетевой инфраструктурой: Россия, Китай, Индия и т.д.</div>
+      </div>
+      <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:36px 44px;display:flex;flex-direction:column;gap:16px;border-left:6px solid #FFB020">
+        <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#FFB020">НУЖНЫ ДАННЫЕ</div>
+        <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Цифры роста использования мобильной связи в этих странах на фоне санкций и региональных ограничений. Не можем пользоваться Zoom / звонками в Telegram — заменяем на мобильную связь.</div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Проблематика" data-screen-label="06" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">06</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Проблематика</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#E5484D">01 · РОУМИНГ</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Звонки за рубеж по стандартным протоколам и тарифам мобильных операторов очень дорогие даже из страны в страну из «белого списка». Звонки в страны и из стран «закрытого» типа зачастую попросту невозможны.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#E5484D">02 · ВХОДЯЩИЕ И SMS</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Отсутствие возможности принимать входящие и СМС (push/OTP уведомления с сервисных номеров) за рубежом. Взаимодействие с банковскими и платёжными системами сильно затруднено или невозможно.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#E5484D">03 · B2B-КОММУНИКАЦИЯ</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Сложность B2B коммуникации с более «закрытыми» странами. Например, звонки из Таиланда в Китай могут не проходить из-за конфликтующих протоколов шифрования.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#E5484D">04 · ПОРОГ ВХОДА</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Все имеющиеся способы установки стабильной связи VOIP/GSM трудоёмкие, требуют особого уровня технической подготовки и оборудования (rooting/перепрошивка телефона) — не юзер-френдли. Стоимость подобного оборудования в разы больше простого Android-телефона.</div>
+    </div>
+  </div>
+  <div style="background:rgba(0,91,234,0.06);border-radius:12px;padding:26px 32px;font-size:24px;line-height:1.4;color:#005BEA;text-wrap:pretty">Двойная выгода: старый Android-телефон у большинства уже есть — покупать не нужно, а привычный интерфейс не требует переучивания.</div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Портрет клиента" data-screen-label="07" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:48px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">07</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Портрет клиента</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:42px;font-weight:700;letter-spacing:-0.01em;color:#00C6FB">B2C</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.84);text-wrap:pretty">Родственники за границей, digital nomads, трудовые мигранты — для звонков домой, связи с родственниками и друзьями.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:42px;font-weight:700;letter-spacing:-0.01em;color:#0F86EF">B2B</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.84);text-wrap:pretty">Телекоммуникационные компании — включение технологии в пакет оказываемых услуг: предоставление свободной связи с любой страной без помех.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:42px;font-weight:700;letter-spacing:-0.01em;color:#005BEA">B2G</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Полиция и спецслужбы: во многих странах при стандартной маршрутизации международных звонков до сих пор используются методы шифрования голосовой телефонии по американским стандартам — американская сторона при желании способна расшифровать разговоры, а спецслужбы страны, в которой разговор происходит и записан, нет.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Решение" data-screen-label="08" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">08</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Решение</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#1FB67A">01 · ЦЕНА МИНУТЫ</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">При использовании технологии мы звоним по тарифу домашнего оператора, а не по междугороднему роумингу, что в десятки раз сокращает расходы за минуту разговора.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужна таблица по тайским операторам — например AIS: минута в роуминге Таиланд–Испания против минуты в домашнем регионе AIS→AIS.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#1FB67A">02 · SMS И OTP</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Получение СМС сообщений, OTP кодов аутентификации и т.д. — напрямую в интерфейс приложения по привязанному номеру или номерам.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#1FB67A">03 · СОБСТВЕННЫЙ VPN</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Используем собственную разработку (VPN), подстраиваясь под региональные протоколы шифрования. Тайская компания-ретейлер и китайская компания-поставщик могут установить прямую «телефонную линию», невзирая на разницу в стандарте шифрования.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#1FB67A">04 · ПРОСТОТА</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Предлагаем конкретное и простое решение, не требующее специальных навыков для установки и использования — устройство + приложение.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Innovation & competition" data-screen-label="09" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">09</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Innovation and competition</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1;min-height:0">
+    <div style="background:#EEF1F3;border-radius:16px;padding:44px;display:flex;flex-direction:column;gap:24px;justify-content:center">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">ЕДИНСТВЕННОЕ ДОСТУПНОЕ РЕШЕНИЕ НА РЫНКЕ — GOIP</div>
+      <div style="display:flex;gap:28px;align-items:center">
+        <img src="assets/goip.jpeg" alt="GOIP" style="width:280px;height:180px;object-fit:contain;background:#FFFFFF;border-radius:10px">
+        <div style="display:flex;flex-direction:column;gap:14px;font-size:25px;color:rgba(48,63,73,0.80)">
+          <div>GOIP-1 (1 линия) — от $95</div>
+          <div>GOIP-32 (32 линии) — от $1300</div>
+          <div>DINSTAR UC2000-VE-4T (4 линии) — от $400</div>
+        </div>
+      </div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.74);text-wrap:pretty">Предполагает установку дорогостоящего и сложного в настройке оборудования. Не подходит ни для B2C, ни для масштабирования — очень нишевое решение.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:24px;justify-content:center;border-left:6px solid #005BEA">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">НАШЕ УСТРОЙСТВО</div>
+      <div style="display:flex;gap:28px;align-items:center">
+        <img src="assets/jack.png" alt="Адаптер gostSIMBOX" style="width:280px;height:180px;object-fit:contain;background:#F8F9FA;border-radius:10px">
+        <div style="font-size:30px;font-weight:600;line-height:1.25;color:#303F49">Уникальная разработка, аналогов на рынке нет</div>
+      </div>
+      <div style="font-size:24px;line-height:1.45;color:rgba(48,63,73,0.84);text-wrap:pretty">Номер, на который поступает звонок, привязывается к SIM и приложению, а не является одноразовым. Появляется возможность определять этот номер и звонить обратно — единственное решение на рынке роутинга международной телефонной связи.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Market potential" data-screen-label="10" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">10</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Market potential</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01</div>
+      <div style="font-size:28px;font-weight:600;line-height:1.2">Digital nomads</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Люди, работающие удалённо и проживающие не в стране резидентства.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужны цифры: ЮВА / Европа / Латинская Америка, конец 2025 — начало 2026.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#22A8F4">02</div>
+      <div style="font-size:28px;font-weight:600;line-height:1.2">Отпускники</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Люди, уезжающие в отпуск из стран с «фаерволом» — Россия и Китай — которым важно поддерживать контакт с родственниками и друзьями.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужны цифры: ежегодный объём.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#0F86EF">03</div>
+      <div style="font-size:28px;font-weight:600;line-height:1.2">Трудовые мигранты</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Таиланд — бирманцы, Россия — узбеки и таджики, Индия, Китай. Важно оставаться на связи по низкой цене при отсутствующем или заблокированном интернете.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужны цифры на конец 2025 — начало 2026.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">04</div>
+      <div style="font-size:28px;font-weight:600;line-height:1.2">Компании</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Работающие с «закрытыми» странами — Россией и Китаем, экспорт/импорт.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужна оценка числа таких компаний в Таиланде.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Scalability" data-screen-label="11" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">11</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Scalability</h2>
+  <div style="font-size:28px;line-height:1.4;color:rgba(48,63,73,0.72)">Расширение при повышении нагрузки на продукт достигается за счёт:</div>
+  <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:24px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01</div>
+      <div style="font-size:32px;font-weight:600;line-height:1.24">Кодирование и декодирование аудиопотока происходит на стороне устройства пользователя</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:24px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">02</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.86);text-wrap:pretty">Для размещения серверов используются датацентры в странах пользователей. Арендная плата за размещение серверов не зависит от количества трафика — вплоть до определённого лимита единовременных пользователей.</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.86);text-wrap:pretty">Рост затрат предполагает только увеличение числа активных пользователей и последующее за ним расширение серверных мощностей. Необходимости в увеличении команды и других затрат при этом нет.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Business Model" data-screen-label="12" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">12</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Business model — продукт, баланс и терминация</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">Устройство-коннектор</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">Продажа в ретейл-магазинах электроники и на маркетплейсах — $5. После получения патента на устройство.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#22A8F4">02</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">Пополнение баланса</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">Пополнение баланса приложения для непосредственного осуществления звонков.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#0F86EF">03</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">Процент минут — 10%</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">От использования минут B2C клиентами возвращаем арбитражникам, которые пользуются устройством для терминирования звонков, в виде минут.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Business Model 4–5" data-screen-label="13" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">13</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Business model — минуты как актив</h2>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px 52px;display:flex;flex-direction:column;gap:24px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#0069EC">04</div>
+      <div style="font-size:34px;font-weight:600;line-height:1.24">Вторичный рынок</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.78)">Минуты монетизируются в токенах (1 минута = 1 токен) и свободно торгуются на бирже. Подходящие чейны — TRX, Solana, ICP. Компания получает revenue share за каждую транзакцию.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px 52px;display:flex;flex-direction:column;gap:24px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">05</div>
+      <div style="font-size:34px;font-weight:600;line-height:1.24">Подписка</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.78)">Приватная «звонилка» для себя и друзей: оплата определённого количества минут по подписке — без сервисного сбора 10% и терминации. Например, тариф $10 = 100 минут.</div>
+    </div>
+  </div>
+  <div style="background:rgba(0,91,234,0.06);border-radius:12px;padding:26px 32px;font-size:25px;line-height:1.45;color:#005BEA;text-wrap:pretty">Пример цены: при прямом пополнении стандартными платёжными средствами 1 минута стоит 10 центов, при покупке токена-минуты на бирже — 3 цента, в зависимости от баланса спроса и предложения.</div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Две модели" data-screen-label="14" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">14</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Итого — два варианта бизнес-модели</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:56px;display:flex;flex-direction:column;gap:28px;justify-content:center">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">ПОДПИСОЧНАЯ МОДЕЛЬ</div>
+      <div style="font-size:46px;font-weight:600;letter-spacing:-0.01em">«Для себя»</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.82)">Оплата пакета минут по подписке. Сервисный сбор и терминация отсутствуют.</div>
+    </div>
+    <div style="background:linear-gradient(180deg,#00C6FB 0%,#005BEA 100%);border-radius:16px;padding:56px;display:flex;flex-direction:column;gap:28px;justify-content:center;color:#FFFFFF">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:rgba(255,255,255,0.85)">10% КОМИССИИ · ВТОРИЧНЫЙ РЫНОК</div>
+      <div style="font-size:46px;font-weight:600;letter-spacing:-0.01em">«Терминирование»</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(255,255,255,0.9)">Пользователь может выступать как в качестве юзера телефонии, так и в качестве терминирующего устройства, получая прибыль в виде «минут», которые в дальнейшем может монетизировать.</div>
+    </div>
+  </div>
+  <div style="font-size:27px;line-height:1.4;color:#303F49;max-width:1500px;text-wrap:pretty">Рост достигается за счёт количества включённых в систему пользователей обоих типов.</div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Traction" data-screen-label="15" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">15</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Traction и product readiness</h2>
+  <div style="display:grid;grid-template-columns:0.85fr 1.15fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#1FB67A">ПРОДУКТ УЖЕ РАБОТАЕТ</div>
+      <div style="font-size:40px;font-weight:600;line-height:1.24">Россия · Украина · Таджикистан · Узбекистан</div>
+      <div style="height:1px;background:rgba(156,178,194,0.35)"></div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.72)">Выручка за 2014 год — добавить таблицу и ссылку на инвойсы (Google Drive).</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px;display:flex;flex-direction:column;gap:24px;justify-content:center;border-left:6px solid #005BEA">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">VALIDATION · B2B КЛИЕНТ</div>
+      <div style="font-size:34px;font-weight:600;line-height:1.24">ALTTECO, Канада — в прошлом AltComTech, Лондон</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.84);text-wrap:pretty">Телекоммуникационная компания, предоставляет связь по миру wholesale — роуты для связи берутся у нас. Клиентам нужно звонить в другие страны, звонки направляются через наш продукт.</div>
+      <div style="font-size:25px;line-height:1.45;color:rgba(48,63,73,0.84);text-wrap:pretty">Низкие цены и качество за счёт автоблокировки неактивных и забаненных SIM в ротации: звонок всегда переадресовывается на активную SIM и доходит до абонента без проблем.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Commercialization rights" data-screen-label="16" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">16</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Commercialization rights</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:56px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#005BEA">СОСТАВ ПРОДУКТА</div>
+      <div style="font-size:30px;line-height:1.35;color:rgba(48,63,73,0.88);text-wrap:pretty">Продукт состоит из open-source решений с GitHub и собственных разработок поверх них — никак не нарушает политику fair use.</div>
+    </div>
+    <div style="background:linear-gradient(180deg,#00C6FB 0%,#005BEA 100%);border-radius:16px;padding:56px;display:flex;flex-direction:column;gap:26px;justify-content:center;color:#FFFFFF">
+      <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:rgba(255,255,255,0.85)">СЛЕДУЮЩИЙ ШАГ</div>
+      <div style="font-size:30px;line-height:1.35;text-wrap:pretty">Планируем запатентовать устройство для работы с голосовой линией на телефонах Android.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Benefit to Thailand" data-screen-label="17" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">17</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Benefit to Thailand</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01 · РАБОЧИЕ МЕСТА</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">В компании уже два тайских работника: Wishayut — frontend-разработчик, Phakin Kongkha — DevOps. Оба тайские студенты Бангкокского университета: успешно прошли онбординг, установили сервер в датацентре в Бангкоке и начали работу над новой версией.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#22A8F4">02 · ЭКСПЕРТИЗА</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Обучение и экспертиза тайских работников профессионалами в сфере телекоммуникаций и роутинга.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#0F86EF">03 · B2B</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Готовое решение для устранения барьеров в B2B коммуникации между тайскими и китайскими/российскими компаниями в сфере импорта-экспорта.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:44px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">04 · СОЦИАЛЬНАЯ ПОЛЬЗА</div>
+      <div style="font-size:24px;line-height:1.42;color:rgba(48,63,73,0.84);text-wrap:pretty">Дешёвая связь с родственниками за рубежом, студентами по обмену, обучающимися за рубежом и т.д.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="International potential" data-screen-label="18" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">18</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">International potential</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:56px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:42px;font-weight:700;letter-spacing:-0.01em;color:#0F86EF">B2B</div>
+      <div style="font-size:28px;line-height:1.4;color:rgba(48,63,73,0.86);text-wrap:pretty">Любые компании в странах, взаимодействующие с компаниями в «закрытых» странах — Китай и Россия.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:56px;display:flex;flex-direction:column;gap:26px;justify-content:center">
+      <div style="font-size:42px;font-weight:700;letter-spacing:-0.01em;color:#00C6FB">B2C</div>
+      <div style="font-size:28px;line-height:1.4;color:rgba(48,63,73,0.86);text-wrap:pretty">Digital nomads в других странах помимо Таиланда, которым нужно связываться с родственниками за рубежом — ЮВА, Европа, Латинская Америка.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="Compliance" data-screen-label="19" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">19</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">Compliance</h2>
+  <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:80px;flex:1;display:flex;flex-direction:column;gap:32px;justify-content:center;border-left:6px solid #FFB020">
+    <div style="font-size:17px;font-weight:600;letter-spacing:.16em;color:#FFB020">ОТКРЫТЫЙ ВОПРОС</div>
+    <div style="font-size:44px;font-weight:600;line-height:1.24;max-width:1350px;text-wrap:pretty">Насколько продукт мэтчится с тайским законодательством?</div>
+    <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.72);max-width:1350px;text-wrap:pretty">Слайд требует юридической проверки: лицензирование телекоммуникационной деятельности, требования NBTC, обработка данных пользователей. Формулировки добавим после консультации.</div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="GTM · запуск" data-screen-label="20" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">20</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">GTM-стратегия — запуск и B2B</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center;border-top:5px solid #00C6FB">
+      <div style="font-size:20px;font-weight:700;color:#00C6FB">01</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">Патент и первая партия</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">Получение патента на устройство и выпуск первой партии.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center;border-top:5px solid #22A8F4">
+      <div style="font-size:20px;font-weight:700;color:#22A8F4">02</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">Тест на тёплой базе</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">Тест технологии на базе клиентов с подключенной IP-телефонией. Базу предоставляет партнёр ALTTECO.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:40px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center;border-top:5px solid #0F86EF">
+      <div style="font-size:20px;font-weight:700;color:#0F86EF">03</div>
+      <div style="font-size:30px;font-weight:600;line-height:1.24">B2B партнёрства</div>
+      <div style="font-size:25px;line-height:1.42;color:rgba(48,63,73,0.72)">База заинтересованных игроков готова. Точка старта — 1~3 тыс. телефонных линий, измеряем снижение затрат на международную телефонию и рост gross revenue у провайдеров. После пилота идём с цифрами к другим компаниям.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+<section data-label="GTM · B2C" data-screen-label="21" style="position:relative;width:1920px;height:1080px;background:#F8F9FA;font-family:'SF Pro Text',-apple-system,system-ui,sans-serif;color:#303F49;padding:76px 110px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;letter-spacing:.16em;color:#B6B6B6">
+    <div style="color:#005BEA">NATIVEMIND × gostSIMBOX</div>
+    <div style="display:flex;align-items:center;gap:24px"><span>ПРОДУКТ И БИЗНЕС-МОДЕЛЬ</span><span style="color:#303F49">21</span></div>
+  </div>
+  <h2 style="font-size:52px;font-weight:600;line-height:1.14;letter-spacing:-0.012em;margin:0;max-width:1500px;text-wrap:pretty">GTM-стратегия — привлечение пользователей</h2>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:36px;flex:1">
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px 52px;display:flex;flex-direction:column;gap:24px;justify-content:center;border-top:5px solid #0069EC">
+      <div style="font-size:20px;font-weight:700;color:#0069EC">04</div>
+      <div style="font-size:34px;font-weight:600;line-height:1.24">B2C реклама</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.78)">Реклама в профильных сообществах. Таргет — экспаты, digital nomads, трудовые мигранты.</div>
+      <div style="font-size:24px;line-height:1.4;color:#FFB020">Нужны примеры сообществ и расценки за пост / clicking ads в Facebook.</div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:16px;box-shadow:0 1px 32px rgba(156,178,194,0.10);padding:48px 52px;display:flex;flex-direction:column;gap:24px;justify-content:center;border-top:5px solid #005BEA">
+      <div style="font-size:20px;font-weight:700;color:#005BEA">05</div>
+      <div style="font-size:34px;font-weight:600;line-height:1.24">Терминация как заработок</div>
+      <div style="font-size:26px;line-height:1.45;color:rgba(48,63,73,0.78)">Реклама в бизнес-сообществах возможности терминации — пассивного заработка на «арбитраже» телекоммуникационного трафика с личного мобильного устройства. Статьи в релевантных источниках: бизнес, заработок, лайфстайл.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:110px;bottom:44px;display:flex;align-items:center;gap:12px">
+    <img src="assets/logo-nativemind.svg" alt="NativeMind" style="width:24px;height:27px;opacity:.42">
+    <span style="font-size:16px;font-weight:600;letter-spacing:.12em;color:#B6B6B6">NATIVEMIND</span>
+  </div>
+</section>
+
+</x-import>
+</x-dc>
+</body>
+</html>
