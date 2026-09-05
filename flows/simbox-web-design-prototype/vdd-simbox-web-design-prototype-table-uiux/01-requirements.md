@@ -106,26 +106,36 @@ SIM owner, SMS quota) when the interface is modernized
 1. **Given** the legacy table has 42 data columns, **when** the table is rebuilt, **then** every
    legacy column's *data* is represented somewhere in the new table (either as its own column, or
    explicitly merged into a compound cell alongside a directly related column — never dropped).
-2. **Given** the `pro` column exists in legacy (shows current provisioning state, blue when it
-   differs from the pending setting), **when** rebuilt, **then** a `pro` column is added showing
-   the same info with the existing "changed from setting" visual convention already used elsewhere
-   in the app (if one exists) or a sensible new one.
+2. **Given** the `pro` column exists in legacy (a per-plan single-character value copied onto each
+   SIM on plan apply, shown blue when the SIM's copy differs from the plan's current value), **when**
+   rebuilt, **then** a `pro` column is added showing the raw value and the same set-vs-current
+   comparison using `T.brandDeep` for the mismatch state — labeled/tooltipped exactly as bare as
+   legacy's own unlabeled "pro" header (2026-09-05 scope decision: the value's deeper business
+   meaning is an explicitly descoped open question, not pursued here — see Open Questions).
 3. **Given** `LIMIT0`–`LIMIT5` are six independent per-slot limits (each with its own `palevo`
-   over-limit flag), **when** rebuilt, **then** all six are visible/reachable (as 6 columns, or as
-   one compact multi-slot cell/popover — see Open Questions), not just slots 0–1.
+   over-limit flag), **when** rebuilt, **then** all six exist as **six separate columns**
+   (`LIMIT0`…`LIMIT5`), matching legacy 1:1 — not just slots 0–1.
 4. **Given** `PDDAS` is a distinct header in legacy, **when** rebuilt, **then** a `PDDAS` column
    exists distinct from `ASRL` (treat legacy's identical data source as a legacy bug, not a spec —
    mock it as its own plausible stat).
 5. **Given** the `may` column's `_sended` cell shows MAY/MON/**MSM** quota lines plus a separate
    SMS soft/hard-limit line, **when** rebuilt, **then** all four lines are present.
-6. **Given** the `operator` column shows provider name + secondary provider name + **owner**,
-   **when** rebuilt, **then** owner is shown as a third line.
+6. ~~`operator` column owner third line~~ — **descoped 2026-09-05**, see Won't Have (the display
+   path is a confirmed legacy bug with no writer ever producing the file it reads; whether to
+   faithfully reproduce the bug or fix it is a product decision this iteration explicitly skips).
 7. **Given** the `spec` column stacks `fas`/`spec`/`vip`/`pre`/`pos` icons, **when** rebuilt,
-   **then** all five icon sources are represented (not just `spec`).
+   **then** all five icon sources are represented, using only code-confirmed behavior: `fas` as a
+   plain boolean-present icon (fully traced, see 02-visual.md); `vip` reproduces legacy's exact
+   `vip==11`/`vip==12`/`vip>0` three-way branch and its three distinct assets, labeled by raw value
+   only (no invented tier-meaning copy — see Won't Have); `pre`/`pos` reuse the **already-shipped**
+   `special.pre`/`special.pos` terminology entries ("Pre-processing"/"Post-processing"), not the
+   current codebase's unverified "предоплата"/"постоплата" guess-labels.
 8. **Given** the `state` column shows: waiting icon, io+qos, an outgoing `em_type` marker, a live
    dialing/ringing/active indicator with elapsed-seconds timer, and — when the line is busy — the
    two connected numbers, **when** rebuilt, **then** these sub-states are represented in the new
    column (static/mocked timer values are fine; this is a design prototype, not a live system).
+   `em_type` is shown as a **raw, uninterpreted value** — matching legacy exactly, which never
+   interprets it either (no icon, no tooltip claim beyond the raw string).
 9. Existing already-correct columns (see gap table "OK" rows) are preserved as-is — this is an
    additive/corrective pass, not a rewrite of the whole page.
 10. Column order in the new table follows legacy left-to-right order, adjusted only where an
@@ -148,6 +158,24 @@ SIM owner, SMS quota) when the interface is modernized
 - Not reproducing legacy's literal PDDAS/ASRL data-source bug — see AC #4.
 - Not implementing the commented-out `pri` column's original intent beyond keeping it as a plain
   numeric column (legacy itself never shipped it live).
+- **2026-09-05 scope decision — everything in 02-visual.md's "Consolidated Open Questions" list is
+  explicitly out of scope for this iteration; only code-confirmed behavior ships.** Concretely:
+  - **`owner` (operator column 3rd line): not added at all.** The read path
+    (`sim/settings/809<imsi>.owner`) has no active writer anywhere in the repo; whether to
+    reproduce that always-blank bug or fix the path is a product decision this iteration skips.
+  - **`pro`'s business meaning**: not explained, labeled, or guessed at beyond legacy's own bare
+    "pro" header — only the confirmed set-vs-current mismatch mechanism ships (AC #2).
+  - **`vip` tier semantics** (why 11/12/generic differ): not explained — only the confirmed
+    3-way icon branch ships, labeled by raw value.
+  - **`pre`/`pos` business meaning**: not asserted as prepayment/postpayment or anything else
+    beyond the already-approved generic "Pre-processing"/"Post-processing" terms.
+  - **`PAL`/`ipalevo.png` naming**: no new name invented; reuses the existing, already-shipped
+    `captcha.pal` unresolved term as-is for all six `LIMITn` over-limit flags.
+  - **`PDDAS`/`ASRL` exact formulas**: not resolved or asserted; PDDAS ships as a distinct column
+    with a plausible mock number only (per AC #4), no claim about which real-world calculation it
+    represents.
+  - **`SR` direction-code collision, `SPE`/`MAG`/`NAV`/`IMA`/`REC` subcodes**: not touched — these
+    were already unresolved before this table rework and remain so; no new UI treatment attempted.
 
 ## Constraints
 
@@ -160,20 +188,32 @@ SIM owner, SMS quota) when the interface is modernized
   larger touch-friendly cells, so very wide tables (LIMIT0–5 especially) need a real layout answer,
   not just 6 more raw columns bolted on — this is an open question for the Visual phase.
 
-## Open Questions
+## Open Questions — resolved 2026-09-05
 
-- [ ] `LIMIT0`–`LIMIT5`: six separate columns (matches legacy exactly, very wide) vs. one compact
-      "limits" cell/popover showing all six + palevo flags (matches data, saves horizontal space)?
-- [ ] `state` column's live call sub-state (dialing/ring/active + elapsed timer, busy numbers):
-      full fidelity mock, or a simplified single "activity" indicator given this is a static
-      prototype where a live timer can't actually tick?
-- [ ] `pro` column: legacy's only visual cue is "blue text when current ≠ setting" — is there
-      already an established "pending change" visual convention elsewhere in the v2026 prototype to
-      reuse, or should this introduce a new one?
-- [ ] Is the dead/commented-out legacy `pri` column worth keeping at all, or should it be dropped
-      now that we know legacy never rendered it?
-- [ ] `dongle_a` (hub port label, `dongle0*` rows only) — fold into the existing `dongle` column as
-      a sub-line, or skip since it only applies to hub-connected dongles?
+- [x] **LIMIT0–LIMIT5**: keep as **six separate columns**, exact 1:1 match with legacy (not
+      compacted into one cell). Each carries its own `.palevo` over-limit icon.
+- [x] **`state` column live sub-state**: **full fidelity**, one-to-one with legacy (waiting icon,
+      io+qos, outgoing `em_type`, dialing/ring/active + elapsed-seconds timer, busy → connected
+      numbers). User additionally suggested it's fine to make the elapsed timer/activity actually
+      tick/change dynamically in the mock (e.g. a periodic `Timer`/ticker driving mock state
+      transitions) as a stretch enhancement — nice to have, not required for AC #8 to pass.
+- [x] **`pro` column visual convention**: investigated `vdd-simbox-web-design-prototype-nabor-uiux`
+      and `vdd-simbox-web-design-prototype-plan-uiux` flows and the current codebase
+      (`lib/design/tokens.dart`, `lib/features/{plans,command_sets,zones}/controller.dart`) — no
+      existing "current value differs from pending/desired setting" visual convention exists
+      anywhere in the v2026 prototype (the `pendingSelectionId` fields found there are unrelated
+      UI-navigation state, not data staleness indicators). Decision: introduce a minimal new
+      convention for this one column, reusing **`T.brandDeep`** (the app's existing blue accent —
+      already visually equivalent to legacy's literal blue-text cue) as the "differs from setting"
+      text color, rather than inventing a new palette color or badge.
+- [x] **`pri` column**: keep as-is (already implemented, harmless, no regression to fix).
+- [x] **`dongle_a`** (hub port label, `dongle0*` rows only): fold into the existing `dongle` column
+      as a small sub-line (consistent with how every other compound cell in this table already
+      stacks a secondary value under the primary one), shown only when non-empty.
+
+## Remaining Open Questions
+
+None blocking — ready for approval.
 
 ## References
 
