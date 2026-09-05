@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-REQUIREMENTS
+IMPLEMENTATION
 
 ## Phase Status
 
@@ -14,32 +14,42 @@ REVIEW
 
 ## Blockers
 
-- Waiting on explicit "requirements approved" from the product owner. All four open questions
-  are now resolved (recorded in 01-requirements.md's Open Questions section and new Acceptance
-  Criteria #23-24):
-  1. Seed: 37 active + 9 audit-only — confirmed as recommended.
-  2. Deletion policy: all three rules (protect default, block if referenced, confirm if unused)
-     — confirmed as recommended.
-  3. Command-set association: **direct editing allowed** for an existing plan (not Clone-only —
-     this is the opposite of the doc's original recommendation).
-  4. Group ownership: **new evidence accepted** — Plan gets no editable group mapping; Directions
-     shows group/route context read-only from the live Zones registry. This overturns the
-     earlier-approved Command Sets amendment. Verified independently against
-     `lib/features/zones/models.dart`'s actual shipped `GroupRule` shape before deciding, not
-     just the requirements narrative.
+- None functional. All code written, `flutter analyze` clean, `flutter build web` succeeds.
+  Two manual-verification checklist items (blocked-delete dialog for a referenced non-default
+  plan; narrow-width `<900px` layout) were not re-driven live in the browser after a late
+  `mock.dart` fix, because the `claude-in-chrome` extension became unstable
+  (connect/disconnect) partway through this session's verification pass. Both use code paths
+  already verified either earlier in this same pass (the identical delete-dialog code for the
+  unreferenced-plan case) or in the already-shipped Zones/Command Sets features (the identical
+  `LayoutBuilder`/narrow pattern). Low risk, but not yet re-confirmed live — see
+  05-implementation-log.md's Handoff notes for exactly what to re-check.
+
+## Requirements — resolved and approved 2026-09-02
+
+- Seed: 33 active + 8 audit-only (corrected during Implementation from an earlier "37+9" claim
+  that didn't survive direct archive verification — see 01-requirements.md's Canonical Initial
+  Registry). Deletion: all three rules (protect default / block if
+  referenced / confirm if unused). Command-set association: **direct editing allowed** for an
+  existing plan (opposite of the doc's original recommendation — Clone stays the *creation*
+  path only). Group ownership: **new evidence accepted** — Plan gets no editable group mapping,
+  Directions shows read-only route context from the live Zones registry (overturns the
+  earlier-approved Command Sets amendment; verified independently against
+  `lib/features/zones/models.dart`'s actual shipped `GroupRule` shape, not just the narrative).
+  Plus: Explanation Banner (Acceptance Criteria #25-27, dismissible top banner + "?" reopen,
+  exact copy recorded verbatim).
 
 ## Progress
 
 - [x] Requirements drafted
-- [ ] Requirements approved
-- [ ] Visual mockups drafted
-- [ ] Visual approved
-- [ ] Specifications drafted
-- [ ] Specifications approved
-- [ ] Plan drafted
-- [ ] Plan approved
-- [ ] Implementation started
-- [ ] Implementation complete
+- [x] Requirements approved
+- [x] Visual mockups drafted
+- [x] Visual approved
+- [x] Specifications drafted
+- [x] Specifications approved
+- [x] Plan drafted
+- [x] Plan approved
+- [x] Implementation started
+- [ ] Implementation complete (2 manual-verification items pending — see Blockers)
 - [ ] Documentation drafted
 - [ ] Documentation approved
 
@@ -49,9 +59,12 @@ REVIEW
   `design/simbox-web-design-prototype-v2026`.
 - Logic source is legacy; visual source is `design/simbox-design-prototype-v2026-dc`.
 - A command set has many plans; a plan selects exactly one command set; a SIM selects one plan.
-- Archived `plan.list` contains 37 non-separator active IDs across seven command sets.
-- Nine additional `.nabor` IDs are unlisted test/orphan evidence and one dashed ID is a separator
-  artifact; requirements recommend excluding them from the operational seed.
+- Archived `plan.list` contains 33 non-separator active IDs across six command sets (default,
+  tele2_spb, beeline_spb, megafon_spb, megafon_msk, mts_spb — `rostel_spb` is a real command set
+  (shipped in command_sets/seed.dart) but owns zero plans in the legacy archive; an earlier draft
+  wrongly attributed plans to it).
+- Eight additional `.nabor` IDs are unlisted test/orphan evidence; requirements recommend
+  excluding them from the operational seed.
 - Legacy exposes roughly 100 stored suffix variants, including aliases and typos. The UI will use
   a finite semantic schema and a development audit instead of raw key/value editing.
 - Runtime counters shown by legacy next to capacity limits are outside editable Plan policy.
@@ -77,8 +90,19 @@ N/A — new flow. It follows the completed Command Sets workspace but does not f
 
 ## Next Actions
 
-1. Get explicit "requirements approved" from the product owner now that all four open questions
-   are resolved.
-2. On approval, move to VISUAL: draft ASCII mockups for the master-detail workspace (registry +
-   semantic-section detail pane), the Directions section's read-only Zones-sourced route
-   context, and the direct command-set-edit interaction (per resolved Q3).
+1. Re-verify live (once `claude-in-chrome` is stable): the blocked-delete dialog for a
+   referenced, non-default plan (e.g. `beeline_spb_good`, now used by 1 SIM after this
+   session's `mock.dart` fix) shows the correct "недоступно" copy with usage count; and the
+   narrow (`<900px`) stacked layout renders correctly.
+2. On confirming both, mark Implementation complete and move to the optional DOCUMENTATION
+   phase if desired, or close out the flow.
+
+## Addendum (2026-09-02, this session)
+
+Product owner asked for a dismissible explanation banner on the Plans screen, offering to
+propose alternatives — presented three options (top banner / title-icon popover / first-visit
+modal) via AskUserQuestion; **top banner** chosen. Exact copy (4 paragraphs: purpose, time_wake/
+time_sleep semantics, diff_slow/diff_min pause semantics, post-edit "Восстановить параметры
+плана" reminder) recorded verbatim in 01-requirements.md's new "Explanation Banner" section, not
+paraphrased. Reopens via a "?" affordance near the page title after dismissal; in-memory session
+state, no persistence, matching the prototype's existing `navCompact`/`logOpen` convention.

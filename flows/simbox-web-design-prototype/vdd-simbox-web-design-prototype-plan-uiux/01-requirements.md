@@ -1,7 +1,7 @@
 # Requirements: Plans editor UI/UX
 
 > Version: 1.0  
-> Status: REVIEW  
+> Status: APPROVED  
 > Last Updated: 2026-09-02
 
 ## Problem Statement
@@ -22,9 +22,13 @@ behavior without reproducing that UI or inventing new telephony policy.
 - `actions/set_plan_set.sh` assigns a plan ID to a SIM; `actions/set_plan_copy.sh` copies plan
   policy into SIM settings and limits.
 - `system/get_args_plan_nabor.sh` confirms the model: SIM -> Plan -> Command set (`.nabor`).
-- `var/simbox/plan09042014.tar.gz/plan/plan.list` contains 37 non-separator plan IDs.
-- The archive contains 47 `.nabor` records: 37 listed plans, one visual separator artifact and
-  nine unlisted test/orphan records.
+- `var/simbox/plan09042014.tar.gz/plan/plan.list` contains **33** non-separator plan IDs (VERIFIED
+  directly against the extracted archive during Implementation — `plan.list` is 38 lines total, 5
+  of which are `-----------` separators; corrects this document's earlier "37" claim, which did
+  not hold up under direct verification).
+- The archive contains 41 `.nabor` records: 33 listed plans and eight unlisted test/orphan
+  records (corrects this document's earlier "47 records / nine unlisted" claim — there is no
+  `local` plan id anywhere in the archive).
 - The existing Flutter `planRows` contains only `default`, `beeline_spb` and `tele2_spb`; those
   guessed rows are not an adequate source of truth.
 
@@ -46,23 +50,34 @@ Command set 1 ---- * Plan 1 ---- * SIM
 
 ## Canonical Initial Registry
 
-The recommended initial product seed is the 37 non-separator entries from archived `plan.list`, in
+The recommended initial product seed is the 33 non-separator entries from archived `plan.list`, in
 their original order. Separators (`-----------`) are presentation artifacts and are not plans.
+**This table was corrected during Implementation** after direct verification against the
+extracted archive — the version approved earlier in this flow incorrectly attributed plans
+(`rostel_sms`, `rostel_trash`, `rostel_good`, `localrostel_sms`) to a `rostel_spb` command set;
+none of those plan ids exist anywhere in the `plan/` archive (`grep -i rostel` over the full
+directory returns zero matches). Note `rostel_spb` itself *is* a real command set (it exists in
+the already-shipped `lib/features/command_sets/seed.dart`, alongside `kievstar`/`life`/`velcom`)
+— it simply has zero plans in the legacy archive, which is a normal, valid state (a command set
+may have zero or many plans, per this document's own Domain Boundary).
 
 | Command set | Plans |
 | --- | --- |
-| `default` | `default`, `localrostel_sms` |
+| `default` | `default` |
 | `tele2_spb` | `tele2_spb_good`, `tele2_spb_max`, `tele2_trash`, `tele2_sms`, `tele2_spb_last`, `tele2_spb_normal`, `tele2_spb_main`, `tele2_spb_bad`, `tele2_spb_new`, `tele2_spb_60min` |
 | `beeline_spb` | `beeline_spb_vip`, `beeline_spb_good`, `beeline_spb_normal`, `beeline_spb_main`, `beeline_spb_bad`, `beeline_spb_max`, `beeline_spb_new`, `beeline_spb_old`, `beeline_spb_new_safe` |
 | `megafon_spb` | `megafon_spb_vip`, `megafon_spb_good`, `megafon_spb_normal`, `megafon_spb_main`, `megafon_spb_max_safe`, `megafon_spb_max`, `megafon_spb_bad` |
 | `megafon_msk` | `megafon_msk_good`, `megafon_msk_bad`, `megafon_msk_main` |
 | `mts_spb` | `mts_spb_good`, `mts_spb_safe`, `mts_spb_60min` |
-| `rostel_spb` | `rostel_sms`, `rostel_trash`, `rostel_good` |
 
-The unlisted `kievstar_test`, `local`, `mts_spb_test`, `noname`,
-`nonamevelcom_test`, `nonamevelcom_testvelcom_test`, `tele2`, `velcom_test` and
-`velcom_test2` are retained in the development audit, not shown as active product plans by
-default. This needs explicit owner confirmation before specifications.
+(1 + 10 + 9 + 7 + 3 + 3 = 33, matching `plan.list`'s verified count exactly.)
+
+The unlisted `kievstar_test`, `mts_spb_test`, `noname`, `nonamevelcom_test`,
+`nonamevelcom_testvelcom_test`, `tele2`, `velcom_test` and `velcom_test2` (eight records — an
+earlier draft of this table listed a ninth, `local`, which does not exist in the archive) are
+retained in the development audit, not shown as active product plans by default. Resolved: see
+Acceptance Criteria below (confirmed by the product owner during the Requirements phase, and the
+counts re-verified against the raw archive during Implementation).
 
 ## Editable Policy Families
 
@@ -249,10 +264,13 @@ Additional acceptance criteria (continuing the numbering below):
 
 ## Open Questions — resolved 2026-09-02 (product owner)
 
-- [x] **Initial seed**: import the 37 `plan.list` plans as the active registry; keep the nine
-  unlisted test/orphan IDs (`kievstar_test`, `local`, `mts_spb_test`, `noname`,
-  `nonamevelcom_test`, `nonamevelcom_testvelcom_test`, `tele2`, `velcom_test`, `velcom_test2`)
-  audit-only, not shown in the default active list. Confirmed as recommended.
+- [x] **Initial seed**: import the `plan.list` plans as the active registry; keep the unlisted
+  test/orphan IDs audit-only, not shown in the default active list. Confirmed as recommended.
+  (Counts corrected during Implementation after direct archive verification: **33** active
+  plans, not 37; **8** audit-only IDs — `kievstar_test`, `mts_spb_test`, `noname`,
+  `nonamevelcom_test`, `nonamevelcom_testvelcom_test`, `tele2`, `velcom_test`, `velcom_test2` —
+  not nine; the earlier-listed ninth id, `local`, does not exist in the archive. See "Canonical
+  Initial Registry" above.)
 - [x] **Deletion policy**: all three rules apply — `default` is protected from deletion;
   deletion is blocked while any SIM references the plan; an unreferenced, non-default plan
   requires an explicit confirmation dialog. Confirmed as recommended.
@@ -412,10 +430,12 @@ Additional acceptance criteria:
 
 ## Approval
 
-- [ ] Requirements approved by product owner
-- [ ] Approved on:
-- [ ] Notes: all four open questions resolved 2026-09-02 (see Open Questions section) — pending
-  explicit "requirements approved" before advancing to Visual.
+- [x] Requirements approved by product owner
+- [x] Approved on: 2026-09-02
+- [x] Notes: all four open questions resolved (see Open Questions section); Explanation Banner
+  (Acceptance Criteria #25-27) added. Its ASCII layout (open/closed states, "?" reopen
+  affordance) belongs in 02-visual.md per VDD's phase split — the requirement/behavior/copy
+  stays here, the visual representation moves to Visual.
 
 ## Legacy Addition 1.3 — MAY, MON and MSM Plan policy semantics (2026-09-02)
 
